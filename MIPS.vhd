@@ -255,7 +255,7 @@ ALU_InA <= ReadData1_Reg;
 ALU_InB <= ReadData2_Reg when ALUSrc = '0' else
 			  SignEx_Out when SignExtend = '1' else
 			  (x"0000" & Instr(15 downto 0));
-ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch
+ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch, addi
 				"00010" when ALUOp = "00" else						-- add when lw and sw
 				"00001" when ALUOp = "11"	else 						-- or when ori
 				"00000" when Instr(5 downto 0) = "100100" else	-- and
