@@ -52,12 +52,15 @@ end component;
 -- ALU
 ----------------------------------------------------------------
 component ALU is
+	 generic (width	: integer);
     Port ( 	
-			ALU_InA 		: in  STD_LOGIC_VECTOR (31 downto 0);				
-			ALU_InB 		: in  STD_LOGIC_VECTOR (31 downto 0);
-			ALU_Out 		: out STD_LOGIC_VECTOR (31 downto 0);
-			ALU_Control	: in  STD_LOGIC_VECTOR (7 downto 0);
-			ALU_zero		: out STD_LOGIC);
+			CLK				: in STD_LOGIC;
+			ALU_InA 			: in  STD_LOGIC_VECTOR (31 downto 0);				
+			ALU_InB 			: in  STD_LOGIC_VECTOR (31 downto 0);
+			ALU_Result1 	: out STD_LOGIC_VECTOR (31 downto 0);
+			ALU_Result2 	: out STD_LOGIC_VECTOR (31 downto 0);
+			ALU_Control		: in  STD_LOGIC_VECTOR (5 downto 0);
+			ALU_Status		: out STD_LOGIC_VECTOR(2 downto 0));
 end component;
 
 ----------------------------------------------------------------
@@ -111,11 +114,12 @@ end component;
 ----------------------------------------------------------------
 -- ALU Signals
 ----------------------------------------------------------------
-	signal	ALU_InA 		:  STD_LOGIC_VECTOR (31 downto 0);
-	signal	ALU_InB 		:  STD_LOGIC_VECTOR (31 downto 0);
-	signal	ALU_Out 		:  STD_LOGIC_VECTOR (31 downto 0);
-	signal	ALU_Control	:  STD_LOGIC_VECTOR (7 downto 0);
-	signal	ALU_zero		:  STD_LOGIC;			
+	signal	ALU_InA 				:  STD_LOGIC_VECTOR (31 downto 0);
+	signal	ALU_InB 				:  STD_LOGIC_VECTOR (31 downto 0);
+	signal	ALU_Result1 		:  STD_LOGIC_VECTOR (31 downto 0);
+	signal	ALU_Result2 		:  STD_LOGIC_VECTOR (31 downto 0);
+	signal	ALU_Control			:  STD_LOGIC_VECTOR (5 downto 0);
+	signal	ALU_Status			:  STD_LOGIC_VECTOR (2 downto 0);
 
 ----------------------------------------------------------------
 -- Control Unit Signals
@@ -151,7 +155,8 @@ end component;
 -- Other Signals
 ----------------------------------------------------------------
 	--<any other signals used goes here>
-	signal PCPlus4 : STD_LOGIC_VECTOR (31 downto 0) := x"00400000";
+	signal PCPlus4 	: STD_LOGIC_VECTOR (31 downto 0) := x"00400000";
+	signal ALU_func	: STD_LOGIC_VECTOR (4 downto 0);
 
 ----------------------------------------------------------------	
 ----------------------------------------------------------------
@@ -174,13 +179,17 @@ PC1				: PC port map
 ----------------------------------------------------------------
 -- ALU port map
 ----------------------------------------------------------------
-ALU1 				: ALU port map
+ALU1 				: ALU 
+					generic map (width =>  32)
+					port map
 						(
-						ALU_InA 		=> ALU_InA, 
-						ALU_InB 		=> ALU_InB, 
-						ALU_Out 		=> ALU_Out, 
-						ALU_Control => ALU_Control, 
-						ALU_zero  	=> ALU_zero
+						CLK				=> CLK,
+						ALU_InA 			=> ALU_InA, 
+						ALU_InB 			=> ALU_InB, 
+						ALU_Result1 	=> ALU_Result1,
+						ALU_Result2 	=> ALU_Result2,
+						ALU_Control 	=> ALU_Control, 
+						ALU_Status  	=> ALU_Status
 						);
 						
 ----------------------------------------------------------------
@@ -232,13 +241,13 @@ SignExtender1			: SignExtender port map
 
 -- Output to TOP
 Addr_Instr <= PC_out;
-Addr_Data <= ALU_out;
-Data_Out <= ReadData2_Reg;
+Addr_Data <= ALU_Result1;
+Data_Out <=	ReadData2_Reg;
 
 -- Input for PC
 PCPlus4 <= PC_out + 4;
 PC_In <= (PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' else
-			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_zero = '1' else
+			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else
 			PCPlus4;
 
 -- Input for ALU
@@ -246,7 +255,26 @@ ALU_InA <= ReadData1_Reg;
 ALU_InB <= ReadData2_Reg when ALUSrc = '0' else
 			  SignEx_Out when SignExtend = '1' else
 			  (x"0000" & Instr(15 downto 0));
-ALU_Control <= (ALUOp & Instr(5 downto 0));
+ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch
+				"00010" when ALUOp = "00" else						-- add when lw and sw
+				"00001" when ALUOp = "11"	else 						-- or when ori
+				"00000" when Instr(5 downto 0) = "100100" else	-- and
+				"00001" when Instr(5 downto 0) = "100101" else	-- or
+				"01100" when Instr(5 downto 0) = "100111" else	-- nor
+				"00100" when Instr(5 downto 0) = "100110" else	-- xor
+				"00010" when Instr(5 downto 0) = "100000" else	-- add
+				"00110" when Instr(5 downto 0) = "100010" else	-- sub
+				"00111" when Instr(5 downto 0) = "101010" else	-- slt
+				"01110" when Instr(5 downto 0) = "101001" else	-- sltu
+				"00101" when Instr(5 downto 0) = "000000" else	-- sll
+				"01101" when Instr(5 downto 0) = "000010" else	-- srl
+				"01001" when Instr(5 downto 0) = "000011" else	-- sra
+				"10000" when Instr(5 downto 0) = "011000" else	-- mult
+				"10001" when Instr(5 downto 0) = "011001" else	-- multu
+				"10010" when Instr(5 downto 0) = "011010" else	-- div
+				"10011" when Instr(5 downto 0) = "011011" else	-- divu
+				"XXXXX";														-- unknown operation
+ALU_Control <= RESET & ALU_Func;	
 
 -- Input for ControlUnit
 opcode <= Instr(31 downto 26);
@@ -258,7 +286,7 @@ WriteAddr_Reg <= Instr(20 downto 16) when RegDst = '0' else
 					  Instr(15 downto 11);
 WriteData_Reg <= Data_in when MemtoReg = '1' else
 					  (Instr(15 downto 0) & x"0000") when (MemtoReg = '0' and InstrtoReg = '1') else
-					  ALU_Out;
+					  ALU_Result1;
 
 -- Input for SignExtender
 SignEx_In <= Instr(15 downto 0);

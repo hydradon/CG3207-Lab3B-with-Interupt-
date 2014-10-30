@@ -112,8 +112,6 @@ constant INSTR_MEM : MEM_256x32 := (
 			x"35080001", --			ori $t0, 0x0001
 			x"3c0a0000", -- loop: 	lui $t2, 0x0000
 			x"354a0004", -- 			ori $t2, 0x0004 # delay counter (n) if using slow clock
-			-- x"3c0a00ff",-- 			#lui $t2, 0x00ff			
-			-- x"354affff",-- 			#ori $t2, 0xffff # delay counter (n) if using fast clock
 			x"01495022", -- delay: 	sub $t2, $t2, $t1 
 			x"0149582a", -- 			slt $t3, $t2, $t1
 			x"1160fffd", -- 			beq $t3, $zero, delay
