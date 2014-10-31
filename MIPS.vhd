@@ -78,7 +78,8 @@ component ControlUnit is
 			MemWrite		: out  STD_LOGIC;	
 			ALUSrc 		: out  STD_LOGIC;	
 			SignExtend 	: out  STD_LOGIC; -- false for ORI 
-			RegWrite		: out  STD_LOGIC;	
+			RegWrite		: out  STD_LOGIC;
+			RegWriteHiLo: out  STD_LOGIC;
 			RegDst		: out  STD_LOGIC);
 end component;
 
@@ -98,10 +99,22 @@ component RegFile is
 end component;
 
 ----------------------------------------------------------------
+-- Hi/Lo register
+----------------------------------------------------------------
+component RegHiLo is
+     Port ( 
+			  HiLo_Addr      : in  STD_LOGIC;										-- 1 is Hi, 0 is Lo
+           WriteData_HiLo : in  STD_LOGIC_VECTOR (31 downto 0);	-- Data write to Hi/Lo
+           ReadData_HiLo  : out  STD_LOGIC_VECTOR (31 downto 0);	-- Data read from Hi/Lo
+			  RegWrite_HiLo  : in STD_LOGIC_VECTOR;									-- 1: write, 0: not write
+           CLK            : in  STD_LOGIC);
+end component;
+
+----------------------------------------------------------------
 -- SignExtender
 ----------------------------------------------------------------
 component SignExtender is
-    Port ( Input : in  STD_LOGIC_VECTOR (15 downto 0);
+    Port ( Input  : in  STD_LOGIC_VECTOR (15 downto 0);
            Output : out  STD_LOGIC_VECTOR (31 downto 0));
 end component;
 
@@ -132,7 +145,8 @@ end component;
 	signal 	InstrtoReg	: 	STD_LOGIC;		
 	signal	ALUSrc 		:  STD_LOGIC;	
 	signal	SignExtend 	: 	STD_LOGIC;
-	signal	RegWrite		: 	STD_LOGIC;	
+	signal	RegWrite		: 	STD_LOGIC;
+	signal 	RegWriteHiLo: 	STD_LOGIC;
 	signal	RegDst		:  STD_LOGIC;
 
 ----------------------------------------------------------------
@@ -144,6 +158,13 @@ end component;
 	signal	ReadData2_Reg 	:  STD_LOGIC_VECTOR (31 downto 0);
 	signal	WriteAddr_Reg	:  STD_LOGIC_VECTOR (4 downto 0); 
 	signal	WriteData_Reg 	:  STD_LOGIC_VECTOR (31 downto 0);
+	
+----------------------------------------------------------------
+-- Hi/Lo Register signals
+----------------------------------------------------------------
+	signal  HiLo_Addr 	  : STD_LOGIC;										
+   signal  WriteData_HiLo : STD_LOGIC_VECTOR (31 downto 0);
+   signal  ReadData_HiLo  : STD_LOGIC_VECTOR (31 downto 0);
 
 ----------------------------------------------------------------
 -- SignExtend Signals
@@ -207,7 +228,8 @@ ControlUnit1 	: ControlUnit port map
 						MemWrite 	=> MemWrite, 
 						ALUSrc 		=> ALUSrc, 
 						SignExtend 	=> SignExtend, 
-						RegWrite 	=> RegWrite, 
+						RegWrite 	=> RegWrite,
+						RegWriteHiLo=> RegWriteHiLo,
 						RegDst 		=> RegDst
 						);
 						
@@ -222,14 +244,26 @@ RegFile1			: RegFile port map
 						ReadData2_Reg 	=>  ReadData2_Reg,
 						WriteAddr_Reg 	=>  WriteAddr_Reg,
 						WriteData_Reg 	=>  WriteData_Reg,
-						RegWrite 		=> RegWrite,
-						CLK 				=> CLK				
+						RegWrite 		=>  RegWrite,
+						CLK 				=>  CLK				
 						);
+						
+----------------------------------------------------------------
+-- HiLo register port map
+----------------------------------------------------------------
+RegHiLo1		:   RegHiLo port map
+					 (
+					 HiLo_Addr      => HiLo_Addr,
+					 ReadData_HiLo  => ReadData_HiLo,
+					 WriteData_HiLo => WriteData_HiLo,
+					 RegWrite_HiLo  => RegWriteHiLo,
+					 CLK            => CLK
+					 );
 
 ----------------------------------------------------------------
 -- SignExtender port map
 ----------------------------------------------------------------
-SignExtender1			: SignExtender port map
+SignExtender1		:SignExtender port map
 						(
 						Input => SignEx_In,
 						Output => SignEx_Out
@@ -264,7 +298,7 @@ ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch, addi
 				"00100" when Instr(5 downto 0) = "100110" else	-- xor
 				"00010" when Instr(5 downto 0) = "100000" else	-- add
 				"00110" when Instr(5 downto 0) = "100010" else	-- sub
-				"00111" when Instr(5 downto 0) = "101010" else	-- slt
+				"00111" when Instr(5 downto 0) = "101010" else	-- slt, slti
 				"01110" when Instr(5 downto 0) = "101011" else	-- sltu
 				"00101" when Instr(5 downto 0) = "000000" else	-- sll
 				"01101" when Instr(5 downto 0) = "000010" else	-- srl
