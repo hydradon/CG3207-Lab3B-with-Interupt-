@@ -31,9 +31,8 @@ use IEEE.STD_LOGIC_unsigned.ALL;
 --use UNISIM.VComponents.all;
 
 entity RegHiLo is
-    Port ( HiLo_Addr      : in  STD_LOGIC;								-- 1 is Hi, 0 is Lo
-           WriteData_HiLo : in  STD_LOGIC_VECTOR (63 downto 0);	-- Data write to Hi/Lo
-           ReadData_HiLo  : out STD_LOGIC_VECTOR (31 downto 0);	-- Data read from Hi/Lo
+   Port (  WriteData_HiLo : in  STD_LOGIC_VECTOR (63 downto 0);	-- Data write to Hi/Lo
+           ReadData_HiLo  : out STD_LOGIC_VECTOR (63 downto 0);	-- Data read from Hi/Lo
 			  RegWrite_HiLo  : in  STD_LOGIC;								-- 1: write, 0: not write
            CLK            : in  STD_LOGIC);
 end RegHiLo;
@@ -45,8 +44,7 @@ signal reg_HiLo : std_logic_vector(63 downto 0) := (others => '0');
 begin
 
 -- read to Hi/Lo
-ReadData_Hilo <= reg_HiLo(31 downto 0) when HiLo_Addr = '0' else
-					  reg_HiLo(63 downto 32);
+ReadData_Hilo <= reg_HiLo;
 
 -- write to Hi/Lo
 process (CLK)

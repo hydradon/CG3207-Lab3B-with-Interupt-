@@ -103,9 +103,8 @@ end component;
 ----------------------------------------------------------------
 component RegHiLo is
      Port ( 
-			  HiLo_Addr      : in  STD_LOGIC;								-- 1 is Hi, 0 is Lo
            WriteData_HiLo : in  STD_LOGIC_VECTOR (63 downto 0);	-- Data write to Hi/Lo
-           ReadData_HiLo  : out STD_LOGIC_VECTOR (31 downto 0);	-- Data read from Hi/Lo
+           ReadData_HiLo  : out STD_LOGIC_VECTOR (63 downto 0);	-- Data read from Hi/Lo
 			  RegWrite_HiLo  : in  STD_LOGIC;								-- 1: write, 0: not write
            CLK            : in  STD_LOGIC);
 end component;
@@ -161,10 +160,9 @@ end component;
 	
 ----------------------------------------------------------------
 -- Hi/Lo Register signals
-----------------------------------------------------------------
-	signal  HiLo_Addr 	  : STD_LOGIC;										
+----------------------------------------------------------------								
    signal  WriteData_HiLo : STD_LOGIC_VECTOR (63 downto 0);
-   signal  ReadData_HiLo  : STD_LOGIC_VECTOR (31 downto 0);
+   signal  ReadData_HiLo  : STD_LOGIC_VECTOR (63 downto 0);
 
 ----------------------------------------------------------------
 -- SignExtend Signals
@@ -253,7 +251,6 @@ RegFile1			: RegFile port map
 ----------------------------------------------------------------
 RegHiLo1		:   RegHiLo port map
 					 (
-					 HiLo_Addr      => HiLo_Addr,
 					 ReadData_HiLo  => ReadData_HiLo,
 					 WriteData_HiLo => WriteData_HiLo,
 					 RegWrite_HiLo  => RegWriteHiLo,
@@ -320,11 +317,13 @@ ReadAddr2_Reg <= Instr(20 downto 16);
 WriteAddr_Reg <= Instr(20 downto 16) when RegDst = '0' else
 					  Instr(15 downto 11);
 WriteData_Reg <= Data_in when MemtoReg = '1' else
-					  (Instr(15 downto 0) & x"0000") when (MemtoReg = '0' and InstrtoReg = '1') else
+					  (Instr(15 downto 0) & x"0000") when InstrtoReg = '1' else
+					  ReadData_HiLo(63 downto 32) when Instr(5 downto 0) = "010000" else
+					  ReadData_HiLo(31 downto 0) when Instr(5 downto 0) = "010010" else
 					  ALU_Result1;
 					  
 -- Input for RegHiLo
-WriteData_HiLo <= ALU_Result2 & ALU_Result1;
+WriteData_HiLo <= ALU_Result2 & ALU_Result1 when Instr(5 downto 2) = "0110";
 
 -- Input for SignExtender
 SignEx_In <= Instr(15 downto 0);
