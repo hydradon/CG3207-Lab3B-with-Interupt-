@@ -313,6 +313,7 @@ ALU_Control <= RESET & ALU_Func;
 -- Input for ControlUnit
 opcode <= Instr(31 downto 26);
 
+
 -- Input for RegFile
 ReadAddr1_Reg <= Instr(25 downto 21);
 ReadAddr2_Reg <= Instr(20 downto 16);
