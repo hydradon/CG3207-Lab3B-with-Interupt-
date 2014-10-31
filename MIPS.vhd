@@ -104,7 +104,7 @@ end component;
 component RegHiLo is
      Port ( 
 			  HiLo_Addr      : in  STD_LOGIC;								-- 1 is Hi, 0 is Lo
-           WriteData_HiLo : in  STD_LOGIC_VECTOR (31 downto 0);	-- Data write to Hi/Lo
+           WriteData_HiLo : in  STD_LOGIC_VECTOR (63 downto 0);	-- Data write to Hi/Lo
            ReadData_HiLo  : out STD_LOGIC_VECTOR (31 downto 0);	-- Data read from Hi/Lo
 			  RegWrite_HiLo  : in  STD_LOGIC;								-- 1: write, 0: not write
            CLK            : in  STD_LOGIC);
@@ -163,7 +163,7 @@ end component;
 -- Hi/Lo Register signals
 ----------------------------------------------------------------
 	signal  HiLo_Addr 	  : STD_LOGIC;										
-   signal  WriteData_HiLo : STD_LOGIC_VECTOR (31 downto 0);
+   signal  WriteData_HiLo : STD_LOGIC_VECTOR (63 downto 0);
    signal  ReadData_HiLo  : STD_LOGIC_VECTOR (31 downto 0);
 
 ----------------------------------------------------------------
@@ -321,6 +321,9 @@ WriteAddr_Reg <= Instr(20 downto 16) when RegDst = '0' else
 WriteData_Reg <= Data_in when MemtoReg = '1' else
 					  (Instr(15 downto 0) & x"0000") when (MemtoReg = '0' and InstrtoReg = '1') else
 					  ALU_Result1;
+					  
+-- Input for RegHiLo
+WriteData_HiLo <= ALU_Result2 & ALU_Result1;
 
 -- Input for SignExtender
 SignEx_In <= Instr(15 downto 0);
