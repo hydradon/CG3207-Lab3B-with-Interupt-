@@ -54,6 +54,7 @@ process (CLK)
 begin
 	if rising_edge(CLK) then
 		if RegWrite_HiLo = '1' then
+		
 			if HiLo_Addr = '0' then
 				REG(0) <= WriteData_HiLo;
 			else
