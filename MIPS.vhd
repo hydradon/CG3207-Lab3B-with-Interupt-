@@ -103,10 +103,10 @@ end component;
 ----------------------------------------------------------------
 component RegHiLo is
      Port ( 
-			  HiLo_Addr      : in  STD_LOGIC;										-- 1 is Hi, 0 is Lo
+			  HiLo_Addr      : in  STD_LOGIC;								-- 1 is Hi, 0 is Lo
            WriteData_HiLo : in  STD_LOGIC_VECTOR (31 downto 0);	-- Data write to Hi/Lo
-           ReadData_HiLo  : out  STD_LOGIC_VECTOR (31 downto 0);	-- Data read from Hi/Lo
-			  RegWrite_HiLo  : in STD_LOGIC_VECTOR;									-- 1: write, 0: not write
+           ReadData_HiLo  : out STD_LOGIC_VECTOR (31 downto 0);	-- Data read from Hi/Lo
+			  RegWrite_HiLo  : in  STD_LOGIC;								-- 1: write, 0: not write
            CLK            : in  STD_LOGIC);
 end component;
 
