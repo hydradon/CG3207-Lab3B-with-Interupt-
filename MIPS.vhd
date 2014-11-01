@@ -282,8 +282,11 @@ PC_In <= (PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' els
 			PCPlus4;
 
 -- Input for ALU
-ALU_InA <= ReadData1_Reg;
-ALU_InB <= ReadData2_Reg when ALUSrc = '0' else
+ALU_InA <= ReadData2_Reg when (ALUOp = "10" and Instr(5 downto 3) = "000") else
+				ReadData1_Reg;
+ALU_InB <= (x"000000" & "000" & Instr(10 downto 6)) when (ALUOp = "10" and Instr(5 downto 2) = "0000") else
+				ReadData1_Reg when (ALUOp = "10" and Instr(5 downto 2) = "0001") else
+				ReadData2_Reg when ALUSrc = '0' else
 			  SignEx_Out when SignExtend = '1' else
 			  (x"0000" & Instr(15 downto 0));
 ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch, addi
@@ -297,9 +300,9 @@ ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch, addi
 				"00110" when Instr(5 downto 0) = "100010" else	-- sub
 				"00111" when Instr(5 downto 0) = "101010" else	-- slt, slti
 				"01110" when Instr(5 downto 0) = "101011" else	-- sltu
-				"00101" when Instr(5 downto 0) = "000000" else	-- sll
-				"01101" when Instr(5 downto 0) = "000010" else	-- srl
-				"01001" when Instr(5 downto 0) = "000011" else	-- sra
+				"00101" when (Instr(5 downto 0) = "000000" or Instr(5 downto 0) = "000100") else	-- sll
+				"01101" when (Instr(5 downto 0) = "000010" or Instr(5 downto 0) = "000110") else	-- srl
+				"01001" when (Instr(5 downto 0) = "000011" or Instr(5 downto 0) = "000111") else	-- sra
 				"10000" when Instr(5 downto 0) = "011000" else	-- mult
 				"10001" when Instr(5 downto 0) = "011001" else	-- multu
 				"10010" when Instr(5 downto 0) = "011010" else	-- div
