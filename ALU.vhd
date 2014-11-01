@@ -150,7 +150,7 @@ case state is
 				ALU_Status(0) <= '0';
 			end if;
 			
-		-- SLT
+		-- SLT, SLTI
 		when "00111" =>
 			B <= not(ALU_InB);
 			C_in <= '1';
@@ -162,7 +162,7 @@ case state is
 				ALU_Result1 <= x"00000000";
 			end if;
 		
-		-- SLTU
+		-- SLTU, SLTIU
 		when "01110" =>
 			B <= not (ALU_InB);
 			C_in <= '1';
@@ -175,7 +175,7 @@ case state is
 
 			end if;
 		
-		-- SLL
+		-- SLL, SLLV
 		when "00101" =>
 			temp := ALU_InA;
 			if ALU_InB(4) = '1' then
@@ -195,7 +195,7 @@ case state is
 			end if;
 			ALU_Result1 <= temp;
 			
-		--SRL, SRA
+		--SRL, SRLV, SRA, SRAV
 		when "01101" | "01001" =>
 			temp := ALU_InA;
 			if ALU_InB(4) = '1' then
