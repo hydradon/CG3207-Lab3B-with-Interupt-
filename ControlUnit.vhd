@@ -20,13 +20,13 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_unsigned.ALL;
 
 entity ControlUnit is
-    Port ( 	opcode 		: in  STD_LOGIC_VECTOR (5 downto 0);
+    Port ( 	opcode 		: in   STD_LOGIC_VECTOR (5 downto 0);
 				ALUOp 		: out  STD_LOGIC_VECTOR (1 downto 0);
 				Branch 		: out  STD_LOGIC;		
 				Jump	 		: out  STD_LOGIC;	
 				MemRead 		: out  STD_LOGIC;	
 				MemtoReg 	: out  STD_LOGIC;	
-				InstrtoReg	: out STD_LOGIC;
+				InstrtoReg	: out  STD_LOGIC;
 				MemWrite		: out  STD_LOGIC;	
 				ALUSrc 		: out  STD_LOGIC;	
 				SignExtend 	: out  STD_LOGIC;
@@ -160,6 +160,19 @@ begin
 			SignExtend <= '1';
 			RegWrite <= '0';
 			RegDst <= 'X';
+		when "000001" => -- BGEZ & BGEZAL
+			ALUOp <= "01";
+			Branch <= '1';
+			Jump <= '0';
+			MemRead <= '0';
+			MemToReg <= 'X';
+			InstrtoReg <= '0';
+			MemWrite <= '0';
+			ALUSrc <= '0';
+			SignExtend <= '1';
+			RegWrite <= '0';
+			RegDst <= 'X';
+		
 		when "000010" => -- J
 			ALUOp <= "XX";
 			Branch <= '0';
@@ -172,6 +185,10 @@ begin
 			SignExtend <= '0';
 			RegWrite <= '0';
 			RegDst <= 'X';
+		when "000011" => -- JAL
+		
+		when "010000" => -- MFC0 & MTC0
+			
 		when others =>
 			ALUOp <= "XX";
 			Branch <= '0';

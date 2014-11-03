@@ -109,6 +109,18 @@ component RegHiLo is
 end component;
 
 ----------------------------------------------------------------
+-- CoProcessor0
+----------------------------------------------------------------
+component RegHiLo is
+     Port ( Addr_Read        : in  STD_LOGIC_VECTOR(4 downto 0);
+				CoProcessorIn    : in  STD_LOGIC_VECTOR(31 downto 0);
+				Addr_Write       : in  STD_LOGIC_VECTOR(4 downto 0);
+				CoProcessorOut   : out STD_LOGIC_VECTOR(31 downto 0);
+				CoProcessorWrite : in  STD_LOGIC;
+				CLK              : in  STD_LOGIC);
+end component;
+
+----------------------------------------------------------------
 -- SignExtender
 ----------------------------------------------------------------
 component SignExtender is
@@ -162,6 +174,15 @@ end component;
    signal  WriteData_HiLo : STD_LOGIC_VECTOR (63 downto 0);
    signal  ReadData_HiLo  : STD_LOGIC_VECTOR (63 downto 0);
 	signal  RegWrite_HiLo  : STD_LOGIC;
+	
+----------------------------------------------------------------
+-- CoProcessor0 signals
+----------------------------------------------------------------								
+   signal  Addr_Read        : STD_LOGIC_VECTOR(4 downto 0);
+	signal  CoProcessorIn    : STD_LOGIC_VECTOR(31 downto 0);
+	signal  Addr_Write       : STD_LOGIC_VECTOR(4 downto 0);
+   signal  CoProcessorOut   : STD_LOGIC_VECTOR(31 downto 0);
+	signal  CoProcessorWrite : STD_LOGIC;
 
 ----------------------------------------------------------------
 -- SignExtend Signals
@@ -254,6 +275,20 @@ RegHiLo1		:   RegHiLo port map
 					 RegWrite_HiLo  => RegWrite_HiLo,
 					 CLK            => CLK
 					 );
+					 
+----------------------------------------------------------------
+-- CoProcessor port map
+----------------------------------------------------------------
+CoProcessor01		:   CoProcessor0 port map
+						(
+						Addr_Read        => Addr_Read,
+						CoProcessorIn    => CoProcessorIn,
+						Addr_Write       => Addr_Write,
+						CoProcessorOut   => CoProcessorOut,
+						CoProcessorWrite => CoProcessorWrite,
+						CLK              => CLK
+						);
+
 
 ----------------------------------------------------------------
 -- SignExtender port map
@@ -283,10 +318,12 @@ PC_In <= (PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' els
 ALU_InA <= ReadData2_Reg when (ALUOp = "10" and Instr(5 downto 3) = "000") else
 				ReadData1_Reg;
 ALU_InB <= (x"000000" & "000" & Instr(10 downto 6)) when (ALUOp = "10" and Instr(5 downto 2) = "0000") else
+				x"00000000" when Instr(31 downto 26) = "000001" else  -- BGEZ
 				ReadData1_Reg when (ALUOp = "10" and Instr(5 downto 2) = "0001") else
 				ReadData2_Reg when ALUSrc = '0' else
-			  SignEx_Out when SignExtend = '1' else
+				SignEx_Out when SignExtend = '1' else
 			  (x"0000" & Instr(15 downto 0));  -- for ADDIU, ORI (non sign extend imm)
+			  
 ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch, addi
 				"00010" when ALUOp = "00" else						-- add when lw, sw, addiu
 				"00001" when ALUOp = "11"	else 						-- or when ori
@@ -319,8 +356,8 @@ WriteAddr_Reg <= Instr(20 downto 16) when RegDst = '0' else
 					  Instr(15 downto 11);
 WriteData_Reg <= Data_in when MemtoReg = '1' else
 					  (Instr(15 downto 0) & x"0000") when InstrtoReg = '1' else
-					  ReadData_HiLo(63 downto 32) when Instr(5 downto 0) = "010000" else
-					  ReadData_HiLo(31 downto 0) when Instr(5 downto 0) = "010010" else
+					  ReadData_HiLo(63 downto 32) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010000") else
+					  ReadData_HiLo(31 downto 0) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010010") else
 					  ALU_Result1;
 					  
 -- Input for RegHiLo
