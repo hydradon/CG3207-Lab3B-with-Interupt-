@@ -326,8 +326,7 @@ WriteData_Reg <= Data_in when MemtoReg = '1' else
 -- Input for RegHiLo
 RegWrite_HiLo <= '1' when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
 					  '0';
-WriteData_HiLo <= ALU_Result2 & ALU_Result1 when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "011") else
-						(others => '0');
+WriteData_HiLo <= ALU_Result2 & ALU_Result1;
 
 -- Input for SignExtender
 SignEx_In <= Instr(15 downto 0);
