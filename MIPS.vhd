@@ -287,8 +287,8 @@ ALU_InB <= (x"000000" & "000" & Instr(10 downto 6)) when (ALUOp = "10" and Instr
 				ReadData2_Reg when ALUSrc = '0' else
 			  SignEx_Out when SignExtend = '1' else
 			  (x"0000" & Instr(15 downto 0));  -- for ADDIU, ORI (non sign extend imm)
-ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch, addi, addiu
-				"00010" when ALUOp = "00" else						-- add when lw and sw
+ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch, addi
+				"00010" when ALUOp = "00" else						-- add when lw, sw, addiu
 				"00001" when ALUOp = "11"	else 						-- or when ori
 				"00000" when Instr(5 downto 0) = "100100" else	-- and
 				"00001" when Instr(5 downto 0) = "100101" else	-- or
@@ -324,9 +324,9 @@ WriteData_Reg <= Data_in when MemtoReg = '1' else
 					  ALU_Result1;
 					  
 -- Input for RegHiLo
-RegWrite_HiLo <= '1' when (Instr(5 downto 0) = "010000" or Instr(5 downto 0) = "010010") else
+RegWrite_HiLo <= '1' when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
 					  '0';
-WriteData_HiLo <= ALU_Result2 & ALU_Result1 when Instr(5 downto 2) = "0110" else
+WriteData_HiLo <= ALU_Result2 & ALU_Result1 when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "011") else
 						(others => '0');
 
 -- Input for SignExtender
