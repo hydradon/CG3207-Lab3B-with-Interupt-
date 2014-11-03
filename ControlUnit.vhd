@@ -31,7 +31,6 @@ entity ControlUnit is
 				ALUSrc 		: out  STD_LOGIC;	
 				SignExtend 	: out  STD_LOGIC;
 				RegWrite		: out  STD_LOGIC;	
-				RegWriteHiLo: out STD_LOGIC;
 				RegDst		: out  STD_LOGIC);
 end ControlUnit;
 
@@ -52,7 +51,6 @@ begin
 			ALUSrc <= '0';
 			SignExtend <= 'X';
 			RegWrite <= '1';
-			RegWriteHiLo <= '0';
 			RegDst <= '1';
 		when "100011" => -- LW
 			ALUOp <= "00";
@@ -65,7 +63,6 @@ begin
 			ALUSrc <= '1';
 			SignExtend <= '1';
 			RegWrite <= '1';
-			RegWriteHiLo <= '0';
 			RegDst <= '0';
 		when "101011" => -- SW
 			ALUOp <= "00";
@@ -78,7 +75,6 @@ begin
 			ALUSrc <= '1';
 			SignExtend <= '1';
 			RegWrite <= '0';
-			RegWriteHiLo <= '0';
 			RegDst <= 'X';
 		when "001111" => -- LUI
 			ALUOp <= "XX";
@@ -91,7 +87,6 @@ begin
 			ALUSrc <= '1';
 			SignExtend <= '0';
 			RegWrite <= '1';
-			RegWriteHiLo <= '0';
 			RegDst <= '0';
 		when "001000" => -- ADDI
 			ALUOp <= "01";
@@ -104,7 +99,6 @@ begin
 			ALUSrc <= '1';
 			SignExtend <= '1';
 			RegWrite <= '1';
-			RegWriteHiLo <= '0';
 			RegDst <= '0';
 		when "001010" => -- SLTI
 			ALUOp <= "10";
@@ -130,7 +124,6 @@ begin
 			ALUSrc <= '1';
 			SignExtend <= '1';
 			RegWrite <= '1';
-			RegWriteHiLo <= '0';
 			RegDst <= '0';
 		when "001101" => -- ORI
 			ALUOp <= "11";
@@ -143,7 +136,6 @@ begin
 			ALUSrc <= '1';
 			SignExtend <= '0';
 			RegWrite <= '1';
-			RegWriteHiLo <= '0';
 			RegDst <= '0';
 		when "000100" => -- BEQ
 			ALUOp <= "01";
@@ -156,7 +148,6 @@ begin
 			ALUSrc <= '0';
 			SignExtend <= '1';
 			RegWrite <= '0';
-			RegWriteHiLo <= '0';
 			RegDst <= 'X';
 		when "000010" => -- J
 			ALUOp <= "XX";
@@ -169,7 +160,6 @@ begin
 			ALUSrc <= 'X';
 			SignExtend <= '0';
 			RegWrite <= '0';
-			RegWriteHiLo <= '0';
 			RegDst <= 'X';
 		when others =>
 			ALUOp <= "XX";
@@ -182,7 +172,6 @@ begin
 			ALUSrc <= 'X';
 			SignExtend <= '0';
 			RegWrite <= '0';
-			RegWriteHiLo <= '0';
 			RegDst <= 'X';
 	end case;
 end process;
