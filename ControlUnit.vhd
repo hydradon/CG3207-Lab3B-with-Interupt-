@@ -100,6 +100,18 @@ begin
 			SignExtend <= '1';
 			RegWrite <= '1';
 			RegDst <= '0';
+		when "001001" => -- ADDIU
+			ALUOp <= "01";
+			Branch <= '0';
+			Jump <= '0';
+			MemRead <= '0';
+			MemToReg <= '0';
+			InstrtoReg <= '0';
+			MemWrite <= '0';
+			ALUSrc <= '1';
+			SignExtend <= '0';
+			RegWrite <= '1';
+			RegDst <= '0';
 		when "001010" => -- SLTI
 			ALUOp <= "10";
 			Branch <= '0';
@@ -111,7 +123,6 @@ begin
 			ALUSrc <= '1';
 			SignExtend <= '1';
 			RegWrite <= '1';
-			RegWriteHiLo <= '0';
 			RegDst <= '0';
 		when "001011" => -- SLTIU
 			ALUOp <= "10";
