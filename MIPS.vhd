@@ -79,7 +79,6 @@ component ControlUnit is
 			ALUSrc 		: out  STD_LOGIC;	
 			SignExtend 	: out  STD_LOGIC; -- false for ORI 
 			RegWrite		: out  STD_LOGIC;
-			RegWriteHiLo: out  STD_LOGIC;
 			RegDst		: out  STD_LOGIC);
 end component;
 
@@ -145,7 +144,6 @@ end component;
 	signal	ALUSrc 		:  STD_LOGIC;	
 	signal	SignExtend 	: 	STD_LOGIC;
 	signal	RegWrite		: 	STD_LOGIC;
-	signal 	RegWriteHiLo: 	STD_LOGIC;
 	signal	RegDst		:  STD_LOGIC;
 
 ----------------------------------------------------------------
@@ -163,6 +161,7 @@ end component;
 ----------------------------------------------------------------								
    signal  WriteData_HiLo : STD_LOGIC_VECTOR (63 downto 0);
    signal  ReadData_HiLo  : STD_LOGIC_VECTOR (63 downto 0);
+	signal  RegWrite_HiLo  : STD_LOGIC;
 
 ----------------------------------------------------------------
 -- SignExtend Signals
@@ -227,7 +226,6 @@ ControlUnit1 	: ControlUnit port map
 						ALUSrc 		=> ALUSrc, 
 						SignExtend 	=> SignExtend, 
 						RegWrite 	=> RegWrite,
-						RegWriteHiLo=> RegWriteHiLo,
 						RegDst 		=> RegDst
 						);
 						
@@ -253,7 +251,7 @@ RegHiLo1		:   RegHiLo port map
 					 (
 					 ReadData_HiLo  => ReadData_HiLo,
 					 WriteData_HiLo => WriteData_HiLo,
-					 RegWrite_HiLo  => RegWriteHiLo,
+					 RegWrite_HiLo  => RegWrite_HiLo,
 					 CLK            => CLK
 					 );
 
@@ -326,7 +324,10 @@ WriteData_Reg <= Data_in when MemtoReg = '1' else
 					  ALU_Result1;
 					  
 -- Input for RegHiLo
-WriteData_HiLo <= ALU_Result2 & ALU_Result1 when Instr(5 downto 2) = "0110";
+RegWrite_HiLo <= '1' when (Instr(5 downto 0) = "010000" or Instr(5 downto 0) = "010010") else
+					  '0';
+WriteData_HiLo <= ALU_Result2 & ALU_Result1 when Instr(5 downto 2) = "0110" else
+						(others => '0');
 
 -- Input for SignExtender
 SignEx_In <= Instr(15 downto 0);
