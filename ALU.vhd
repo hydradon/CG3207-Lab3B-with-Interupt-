@@ -256,7 +256,7 @@ end process;
 
 MULTI_CYCLE_PROCESS : process (CLK) -- multi-cycle operations done here
 -- assume that ALU_InA and Operand 2 do not change while multi-cycle operations are being performed
-variable count : std_logic_vector(15 downto 0) := (others => '0');
+variable count : std_logic_vector(5 downto 0) := (others => '0');
 variable temp : std_logic_vector(2*width-1 downto 0);
 variable temp_wider : std_logic_vector(2*width downto 0);
 variable temp_var : std_logic;
@@ -294,7 +294,7 @@ begin
 				temp_wider(2*width-1 downto 0) := temp_wider(2*width downto 1);
 				temp_wider(2*width) := temp_wider(2*width-1) and (not ALU_Control(0));
 				
-				if count=x"0020" then	
+				if count="100000" then	
 					Result1_multi <= temp_wider(width-1 downto 0);
 					Result2_multi <= temp_wider(2*width-1 downto width);
 					done <= '1';	
@@ -344,7 +344,7 @@ begin
 					temp_wider(0) := '1';	
 				end if;
 				
-				if count=x"0020" then
+				if count="100000" then
 					--shift only the left half by 1 bit to the right
 					temp_wider(2*width-1 downto width) := temp_wider(2*width downto width+1);
 					temp_wider(2*width) := '0';
