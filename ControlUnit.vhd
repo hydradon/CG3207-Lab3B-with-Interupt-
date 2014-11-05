@@ -149,7 +149,7 @@ begin
 			RegWrite <= '0';
 			RegDst <= 'X';
 		when "000001" => -- BGEZ
-			ALUOp <= "01";
+			ALUOp <= "10";
 			Branch <= '1';
 			Jump <= '0';
 			MemRead <= '0';
