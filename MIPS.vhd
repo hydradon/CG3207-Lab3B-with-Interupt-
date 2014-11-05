@@ -336,7 +336,7 @@ ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch
 				"00010" when Instr(5 downto 0) = "100000" else	-- add
 				"00110" when Instr(5 downto 0) = "100010" else	-- sub
 				"00111" when (Instr(5 downto 0) = "101010" or Instr(31 downto 26) = "001010") else	-- slt, slti, bgez
-				"01110" when (Instr(5 downto 0) = "101011" or Instr(31 downto 26) = "001011")else	-- sltu, sltiu
+				"01110" when Instr(5 downto 0) = "101011"else	-- sltu
 				"00101" when (Instr(5 downto 0) = "000000" or Instr(5 downto 0) = "000100") else	-- sll, sllv
 				"01101" when (Instr(5 downto 0) = "000010" or Instr(5 downto 0) = "000110") else	-- srl, srlv
 				"01001" when (Instr(5 downto 0) = "000011" or Instr(5 downto 0) = "000111") else	-- sra, srav
