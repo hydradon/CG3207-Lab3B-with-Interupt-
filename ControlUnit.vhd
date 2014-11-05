@@ -89,7 +89,7 @@ begin
 			RegWrite <= '1';
 			RegDst <= '0';
 		when "001000" => -- ADDI
-			ALUOp <= "01";
+			ALUOp <= "00";
 			Branch <= '0';
 			Jump <= '0';
 			MemRead <= '0';

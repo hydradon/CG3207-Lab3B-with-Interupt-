@@ -324,9 +324,10 @@ ALU_InB <= (x"000000" & "000" & Instr(10 downto 6)) when (ALUOp = "10" and Instr
 				ReadData2_Reg when ALUSrc = '0' else
 				SignEx_Out when SignExtend = '1' else
 			  (x"0000" & Instr(15 downto 0));  -- for ADDIU, ORI (non sign extend imm)
-			  
-ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch, addi
-				"00010" when ALUOp = "00" else						-- add when lw, sw, addiu
+
+
+ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch
+				"00010" when ALUOp = "00" else						-- add when lw, sw, addiu, addi
 				"00001" when ALUOp = "11"	else 						-- or when ori
 				"00000" when Instr(5 downto 0) = "100100" else	-- and
 				"00001" when Instr(5 downto 0) = "100101" else	-- or
