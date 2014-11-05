@@ -317,11 +317,11 @@ PC_In <= (PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' els
 			PCPlus4;
 
 -- Input for ALU
-ALU_InA <= ReadData2_Reg when (ALUOp = "10" and Instr(5 downto 3) = "000") else
+ALU_InA <= ReadData2_Reg when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "000") else
 				ReadData1_Reg;
-ALU_InB <= (x"000000" & "000" & Instr(10 downto 6)) when (ALUOp = "10" and Instr(5 downto 2) = "0000") else
+ALU_InB <= (x"000000" & "000" & Instr(10 downto 6)) when (Instr(31 downto 26) = "000000" and Instr(5 downto 2) = "0000") else
 				x"00000000" when Instr(31 downto 26) = "000001" else  -- BGEZ
-				ReadData1_Reg when (ALUOp = "10" and Instr(5 downto 2) = "0001") else
+				ReadData1_Reg when (Instr(31 downto 26) = "000000" and Instr(5 downto 2) = "0001") else
 				ReadData2_Reg when ALUSrc = '0' else
 				SignEx_Out when SignExtend = '1' else
 			  (x"0000" & Instr(15 downto 0));  -- for ADDIU, ORI (non sign extend imm)
