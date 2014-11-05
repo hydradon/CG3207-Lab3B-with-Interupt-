@@ -39,19 +39,23 @@ signal REG: reg_type := (others => x"00000000");
 
 begin
 
--- Read data from REG
-ReadData1_Reg <= REG(conv_integer(ReadAddr1_Reg));
-ReadData2_Reg <= REG(conv_integer(ReadAddr2_Reg));
+---- Read data from REG
+--ReadData1_Reg <= REG(conv_integer(ReadAddr1_Reg));
+--ReadData2_Reg <= REG(conv_integer(ReadAddr2_Reg));
 
 -- Write data to REG
 process (CLK)
 begin
 	if rising_edge(CLK) then
-		if RegWrite = '1' and (not WriteAddr_Reg = x"00000000") then
+		if RegWrite = '1' and (WriteAddr_Reg /= "00000") then
 			REG(conv_integer(WriteAddr_Reg)) <= WriteData_Reg;
 		end if;
 	end if;
 end process;
+
+-- Read data from REG
+ReadData1_Reg <= REG(conv_integer(ReadAddr1_Reg));
+ReadData2_Reg <= REG(conv_integer(ReadAddr2_Reg));
 
 end arch_RegFile;
 
