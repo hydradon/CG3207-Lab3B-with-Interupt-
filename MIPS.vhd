@@ -309,7 +309,8 @@ Addr_Data <= ALU_Result1;
 Data_Out <=	ReadData2_Reg;
 
 -- Input for PC
-PCPlus4 <= PC_out + 4;
+PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
+			  PC_out;
 PC_In <= (PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' else
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Result1(0) = '0' else -- bgez
@@ -335,7 +336,8 @@ ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch
 				"00100" when Instr(5 downto 0) = "100110" else	-- xor
 				"00010" when Instr(5 downto 0) = "100000" else	-- add
 				"00110" when Instr(5 downto 0) = "100010" else	-- sub
-				"00111" when (Instr(5 downto 0) = "101010" or Instr(31 downto 26) = "001010") else	-- slt, slti, bgez
+				"00111" when Instr(31 downto 26) = "001010" else -- slti
+				"00111" when Instr(5 downto 0) = "101010" else	-- slt, bgez
 				"01110" when Instr(5 downto 0) = "101011"else	-- sltu
 				"00101" when (Instr(5 downto 0) = "000000" or Instr(5 downto 0) = "000100") else	-- sll, sllv
 				"01101" when (Instr(5 downto 0) = "000010" or Instr(5 downto 0) = "000110") else	-- srl, srlv
