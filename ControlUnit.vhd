@@ -133,7 +133,7 @@ begin
 			InstrtoReg <= '0';
 			MemWrite <= '0';
 			ALUSrc <= '1';
-			SignExtend <= '1';
+			SignExtend <= '0';
 			RegWrite <= '1';
 			RegDst <= '0';
 		when "001101" => -- ORI
