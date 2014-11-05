@@ -104,10 +104,13 @@ type MEM_256x32 is array (0 to 255) of std_logic_vector (31 downto 0); -- 256 wo
 ----------------------------------------------------------------
 constant INSTR_MEM : MEM_256x32 := (
 			x"35290064", -- ori $t1, 100
-			x"354a00c8", -- ori $t2, 200
-			x"212b0190", -- addi $t3, $t1, 400
-			x"012a6022", -- sub $t4, $t1, $t2
-			x"01496022", -- sub $t4, $t2, $t1
+			x"212bfe70",
+			x"3c0c3210",
+			x"358cc8a4",
+			x"01896824",
+			x"01896825",
+			x"01896827",
+			x"01896826",
 --			x"3c090000", -- start : lui $t1, 0x0000
 --			x"35290001", -- 			ori $t1, 0x0001 # constant 1
 --			x"3c081002", -- 			lui $t0, 0x1002 # DIP address before offset
