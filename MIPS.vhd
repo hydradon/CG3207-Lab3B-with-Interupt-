@@ -112,9 +112,9 @@ end component;
 -- CoProcessor0
 ----------------------------------------------------------------
 component CoProcessor0 is
-     Port ( Addr_Read        : in  STD_LOGIC_VECTOR(4 downto 0);
+     Port ( CoProAddr_Read   : in  STD_LOGIC_VECTOR(4 downto 0);
 				CoProcessorIn    : in  STD_LOGIC_VECTOR(31 downto 0);
-				Addr_Write       : in  STD_LOGIC_VECTOR(4 downto 0);
+				CoProAddr_Write  : in  STD_LOGIC_VECTOR(4 downto 0);
 				CoProcessorOut   : out STD_LOGIC_VECTOR(31 downto 0);
 				CoProcessorWrite : in  STD_LOGIC;
 				CLK              : in  STD_LOGIC);
@@ -178,9 +178,9 @@ end component;
 ----------------------------------------------------------------
 -- CoProcessor0 signals
 ----------------------------------------------------------------								
-   signal  Addr_Read        : STD_LOGIC_VECTOR(4 downto 0);
+   signal  CoProAddr_Read   : STD_LOGIC_VECTOR(4 downto 0);
 	signal  CoProcessorIn    : STD_LOGIC_VECTOR(31 downto 0);
-	signal  Addr_Write       : STD_LOGIC_VECTOR(4 downto 0);
+	signal  CoProAddr_Write  : STD_LOGIC_VECTOR(4 downto 0);
    signal  CoProcessorOut   : STD_LOGIC_VECTOR(31 downto 0);
 	signal  CoProcessorWrite : STD_LOGIC;
 
@@ -281,9 +281,9 @@ RegHiLo1		:   RegHiLo port map
 ----------------------------------------------------------------
 CoProcessor01		:   CoProcessor0 port map
 						(
-						Addr_Read        => Addr_Read,
+						CoProAddr_Read   => CoProAddr_Read,
 						CoProcessorIn    => CoProcessorIn,
-						Addr_Write       => Addr_Write,
+						CoProAddr_Write  => CoProAddr_Write,
 						CoProcessorOut   => CoProcessorOut,
 						CoProcessorWrite => CoProcessorWrite,
 						CLK              => CLK
@@ -303,10 +303,16 @@ SignExtender1		:SignExtender port map
 ----------------------------------------------------------------
 --<Rest of the logic goes here>
 
+
+
+
+-- Input for ControlUnit
+opcode <= Instr(31 downto 26);
+
+--IF stage----------------------------------------------------------------------------------------------------------------
+
 -- Output to TOP
 Addr_Instr <= PC_out;
-Addr_Data <= ALU_Result1;
-Data_Out <=	ReadData2_Reg;
 
 -- Input for PC
 PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
@@ -316,7 +322,25 @@ PC_In <= Readdata1_Reg when ALUOp = "00" and Instr(5 downto 1) = "00100" else --
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Result1(0) = '0' else -- bgez
 			PCPlus4;
+--end IF stage----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
 
+
+--ID stage----------------------------------------------------------------------------------------------------------------
+-- Input for RegFile
+ReadAddr1_Reg <= Instr(25 downto 21);
+ReadAddr2_Reg <= Instr(20 downto 16);
+
+					  
+-- Input for SignExtender
+SignEx_In <= Instr(15 downto 0);
+
+--end ID stage----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+
+
+			
+--EX stage----------------------------------------------------------------------------------------------------------------
 -- Input for ALU
 ALU_InA <= ReadData2_Reg when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "000") else
 				ReadData1_Reg;
@@ -354,13 +378,25 @@ ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch
 				"XXXXX";														-- unknown operation
 ALU_Control <= RESET & ALU_Func;	
 
--- Input for ControlUnit
-opcode <= Instr(31 downto 26);
 
+-- Input for RegHiLo
+RegWrite_HiLo <= '1' when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
+					  '0';
+WriteData_HiLo <= ALU_Result2 & ALU_Result1;
 
--- Input for RegFile
-ReadAddr1_Reg <= Instr(25 downto 21);
-ReadAddr2_Reg <= Instr(20 downto 16);
+---end EX stage---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+
+---MEM stage------------------------------------------------------------------------------------------------------------------
+
+-- Output to TOP
+Addr_Data <= ALU_Result1;
+Data_Out <=	ReadData2_Reg;
+
+---end MEM stage---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+
+---WB stage-------------------------------------------------------------------------------------------------------------------
 WriteAddr_Reg <= "11111" when ((Instr(31 downto 26) = "000001" and 
 						(Instr(20 downto 16) = "10001" or Instr(20 downto 16) = "10000")) or 
 						Instr(31 downto 26) = "000011" or (ALUOp = "00" and Instr(5 downto 0) = "001001")) else	--bgezal or bltzal or jal or jalr
@@ -375,21 +411,17 @@ WriteData_Reg <= PC_in + 4 when ((Instr(31 downto 26) = "000001" and
 					  ReadData_HiLo(31 downto 0) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010010") else
 					  CoProcessorOut when (Instr(31 downto 26) = "010000" and Instr(23) = '0') else -- MFC0
 					  ALU_Result1;
-					  
--- Input for RegHiLo
-RegWrite_HiLo <= '1' when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
-					  '0';
-WriteData_HiLo <= ALU_Result2 & ALU_Result1;
 
--- Input for SignExtender
-SignEx_In <= Instr(15 downto 0);
+---end WB stage---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
 
 -- Input for CoProcessor0
-Addr_Read <= Instr(15 downto 11);
-Addr_Write <= Instr(15 downto 11);
+CoProAddr_Read <= Instr(15 downto 11);
+CoProAddr_Write <= Instr(15 downto 11);
 CoProcessorIn <= ReadData2_Reg;
 CoProcessorWrite <= '1' when (Instr(31 downto 26) = "010000" and Instr(23) = '1') else -- MTC0
 						  '0';
+						  
 
 end arch_MIPS;
 

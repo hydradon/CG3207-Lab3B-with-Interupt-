@@ -31,9 +31,9 @@ use IEEE.STD_LOGIC_unsigned.ALL;
 --use UNISIM.VComponents.all;
 
 entity CoProcessor0 is
-    Port ( Addr_Read        : in  STD_LOGIC_VECTOR(4 downto 0);
+    Port ( CoProAddr_Read   : in  STD_LOGIC_VECTOR(4 downto 0);
 			  CoProcessorIn    : in  STD_LOGIC_VECTOR(31 downto 0);
-			  Addr_Write       : in  STD_LOGIC_VECTOR(4 downto 0);
+			  CoProAddr_Write  : in  STD_LOGIC_VECTOR(4 downto 0);
            CoProcessorOut   : out STD_LOGIC_VECTOR(31 downto 0);
 			  CoProcessorWrite : in  STD_LOGIC;
            CLK              : in  STD_LOGIC);
@@ -53,7 +53,7 @@ signal REG: reg_type := (others => x"00000000");
 begin
 
 -- Read data from REG
-CoProcessorOut <= REG(conv_integer(Addr_Read));
+CoProcessorOut <= REG(conv_integer(CoProAddr_Read));
 
 
 -- Write data to REG
@@ -61,7 +61,7 @@ process (CLK)
 begin
 	if rising_edge(CLK) then
 		if CoProcessorWrite = '1' then
-			REG(conv_integer(Addr_Write)) <= CoProcessorIn;
+			REG(conv_integer(CoProAddr_Write)) <= CoProcessorIn;
 		end if;
 	end if;
 end process;
