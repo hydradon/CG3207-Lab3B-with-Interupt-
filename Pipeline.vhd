@@ -222,6 +222,7 @@ begin
 			MEMWB_ALUResult1Out		<= x"00000000";
 			MEMWB_ALUResult2Out		<= x"00000000";
 			MEMWB_WriteAddrRegOut	<= x"00000000";
+			
 		elsif MEMWB_Stall = '0' then
 			MEMWB_MemtoRegOut			<= MEMWB_MemtoRegIn;
 			MEMWB_MemReadDataOut		<= MEMWB_MemReadDataIn;
