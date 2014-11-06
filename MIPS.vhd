@@ -344,14 +344,46 @@ end component;
 ----------------------------------------------------------------
 -- EX_MEM Signals
 ----------------------------------------------------------------
+	signal	EXMEM_Flush					: STD_LOGIC;
+	signal	EXMEM_Stall					: STD_LOGIC;
+	signal	EXMEM_BranchIn				: STD_LOGIC;
+	signal	EXMEM_BranchTargetIn		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	EXMEM_MemreadIn			: STD_LOGIC;
+	signal	EXMEM_MemtoRegIn			: STD_LOGIC;
+	signal	EXMEM_MemwriteIn			: STD_LOGIC;
+	signal	EXMEM_ALUZeroIn			: STD_LOGIC;
+	signal	EXMEM_ALUResult1In		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	EXMEM_ALUResult2In		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	EXMEM_WriteDataMemIn		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	EXMEM_WriteAddrRegIn		: STD_LOGIC_VECTOR(31 downto 0);
 
+	signal	EXMEM_BranchOut			: STD_LOGIC;
+	signal	EXMEM_BranchTargetOut	: STD_LOGIC_VECTOR(31 downto 0);
+	signal	EXMEM_MemreadOut			: STD_LOGIC;
+	signal	EXMEM_MemtoRegOut			: STD_LOGIC;
+	signal	EXMEM_MemwriteOut			: STD_LOGIC;
+	signal	EXMEM_ALUZeroOut			: STD_LOGIC;
+	signal	EXMEM_ALUResult1Out		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	EXMEM_ALUResult2Out		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	EXMEM_WriteDataMemOut	: STD_LOGIC_VECTOR(31 downto 0);
+	signal	EXMEM_WriteAddrRegOut	: STD_LOGIC_VECTOR(31 downto 0);
+	
 ----------------------------------------------------------------
 -- MEM_WB Signals
 ----------------------------------------------------------------
-
-
-
-
+	signal	MEMWB_Flush					: STD_LOGIC;
+	signal	MEMWB_Stall					: STD_LOGIC;
+	signal	MEMWB_MemtoRegIn			: STD_LOGIC;
+	signal	MEMWB_MemReadDataIn		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	MEMWB_ALUResult1In		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	MEMWB_ALUResult2In		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	MEMWB_WriteAddrRegIn		: STD_LOGIC_VECTOR(31 downto 0);
+		
+	signal	MEMWB_MemtoRegOut			: STD_LOGIC;
+	signal	MEMWB_MemReadDataOut		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	MEMWB_ALUResult1Out		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	MEMWB_ALUResult2Out		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	MEMWB_WriteAddrRegOut	: STD_LOGIC_VECTOR(31 downto 0);
 
 ----------------------------------------------------------------	
 ----------------------------------------------------------------
