@@ -172,7 +172,21 @@ end arch_EXMEM;
 -- MEM_WB Pipeline Register
 ----------------------------------------------------------------------------------
 entity MEM_WB is
-Port ();
+Port (CLK					 		:	in STD_LOGIC;
+		MEMWB_Flush					:	in STD_LOGIC;
+		MEMWB_Stall					:	in STD_LOGIC;
+		MEMWB_MemtoRegIn			:	in STD_LOGIC;
+		MEMWB_MemReadDataIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+		MEMWB_ALUResult1In		:	in STD_LOGIC_VECTOR(31 downto 0);
+		MEMWB_ALUResult2In		:	in STD_LOGIC_VECTOR(31 downto 0);
+		MEMWB_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+		
+		MEMWB_MemtoRegOut			:	out STD_LOGIC;
+		MEMWB_MemReadDataOut		:	out STD_LOGIC_VECTOR(31 downto 0);
+		MEMWB_ALUResult1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
+		MEMWB_ALUResult2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
+		MEMWB_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0);
+		);
 end Pipeline;
 
 architecture arch_MEMWB of MEM_WB is
@@ -180,8 +194,18 @@ begin
 process (CLK)
 begin
 	if rising_edge(CLK) then
-		if RESET = '1' then
-		else
+		if MEMWB_Flush = '1' then
+			MEMWB_MemtoRegOut			<= '0';
+			MEMWB_MemReadDataOut		<= x"00000000";
+			MEMWB_ALUResult1Out		<= x"00000000";
+			MEMWB_ALUResult2Out		<= x"00000000";
+			MEMWB_WriteAddrRegOut	<= x"00000000";
+		elsif MEMWB_Stall = '0' then
+			MEMWB_MemtoRegOut			<= MEMWB_MemtoRegIn;
+			MEMWB_MemReadDataOut		<= MEMWB_MemReadDataIn;
+			MEMWB_ALUResult1Out		<= MEMWB_ALUResult1In;
+			MEMWB_ALUResult2Out		<= MEMWB_ALUResult2In;
+			MEMWB_WriteAddrRegOut	<= MEMWB_WriteAddrRegIn;
 		end if;
 	end if;
 end process;
