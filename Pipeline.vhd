@@ -1,6 +1,6 @@
 ----------------------------------------------------------------------------------
 -- Company: 
--- Engineer: 
+-- Engineer: Nguyen Ngoc Nhu Thao
 -- 
 -- Create Date:    20:43:00 11/06/2014 
 -- Design Name: 
@@ -33,7 +33,7 @@ Port (CLK					: 	in STD_LOGIC;
 		IFID_PCPlus4Out	:	out STD_LOGIC_VECTOR(31 downto 0);
 		IFID_InstrOut		: 	out STD_LOGIC_VECTOR(31 downto 0)
 		);
-end Pipeline;
+end IF_ID;
 
 architecture arch_IFID of IF_ID is
 begin
@@ -85,7 +85,7 @@ Port (CLK						:	in STD_LOGIC;
 		IDEX_ReadData2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 		IDEX_SignExtendedOut	:	out STD_LOGIC_VECTOR(31 downto 0)
 		);
-end Pipeline;
+end ID_EX;
 
 architecture arch_IDEX of ID_EX is
 begin
@@ -154,7 +154,7 @@ Port (CLK							:	in STD_LOGIC;
 		EXMEM_WriteDataMemOut	:	out STD_LOGIC_VECTOR(31 downto 0);
 		EXMEM_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0)
 		);
-end Pipeline;
+end EX_MEM;
 
 architecture arch_EXMEM of EX_MEM is
 begin
@@ -209,7 +209,7 @@ Port (CLK					 		:	in STD_LOGIC;
 		MEMWB_ALUResult2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 		MEMWB_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0)
 		);
-end Pipeline;
+end MEM_WB;
 
 architecture arch_MEMWB of MEM_WB is
 begin

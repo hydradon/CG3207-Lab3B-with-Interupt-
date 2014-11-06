@@ -129,6 +129,108 @@ component SignExtender is
 end component;
 
 ----------------------------------------------------------------
+-- IF_ID
+----------------------------------------------------------------
+component IF_ID is
+	Port (CLK					: 	in STD_LOGIC;
+			IFID_Flush			: 	in STD_LOGIC;
+			IFID_Stall			: 	in STD_LOGIC;
+			IFID_PCPlus4In		:	in STD_LOGIC_VECTOR(31 downto 0);
+			IFID_InstrIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+
+			IFID_PCPlus4Out	:	out STD_LOGIC_VECTOR(31 downto 0);
+			IFID_InstrOut		: 	out STD_LOGIC_VECTOR(31 downto 0)
+			);
+end component;
+
+----------------------------------------------------------------
+-- ID_EX
+----------------------------------------------------------------
+component ID_EX is
+	Port (CLK						:	in STD_LOGIC;
+			IDEX_Flush				:	in STD_LOGIC;
+			IDEX_Stall				:	in STD_LOGIC;
+			IDEX_BranchIn			:	in STD_LOGIC;
+			IDEX_ALUOpIn			:  in STD_LOGIC_VECTOR(1 downto 0);
+			IDEX_MemreadIn			:  in STD_LOGIC;
+			IDEX_MemtoRegIn		:	in STD_LOGIC;
+			IDEX_MemwriteIn		:  in STD_LOGIC;
+			IDEX_ALUSrcIn			:	in STD_LOGIC;
+			IDEX_RegDstIn			:	in STD_LOGIC;
+			IDEX_Instr20To11In	:	in STD_LOGIC_VECTOR(9 downto 0);
+			IDEX_PCPlus4In			:	in STD_LOGIC_VECTOR(31 downto 0);
+			IDEX_ReadData1In		:	in STD_LOGIC_VECTOR(31 downto 0);
+			IDEX_ReadData2In		:	in STD_LOGIC_VECTOR(31 downto 0);
+			IDEX_SignExtendedIn	:	in STD_LOGIC_VECTOR(31 downto 0);
+			
+			IDEX_BranchOut			:	out STD_LOGIC;
+			IDEX_ALUOpOut			:  out STD_LOGIC_VECTOR(1 downto 0);
+			IDEX_MemreadOut		:  out STD_LOGIC;
+			IDEX_MemtoRegOut		:	out STD_LOGIC;
+			IDEX_MemwriteOut		:  out STD_LOGIC;
+			IDEX_ALUSrcOut			:	out STD_LOGIC;
+			IDEX_RegDstOut			:	out STD_LOGIC;
+			IDEX_Instr20To11Out	:	out STD_LOGIC_VECTOR(9 downto 0);
+			IDEX_PCPlus4Out		:	out STD_LOGIC_VECTOR(31 downto 0);
+			IDEX_ReadData1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
+			IDEX_ReadData2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
+			IDEX_SignExtendedOut	:	out STD_LOGIC_VECTOR(31 downto 0)
+			);
+end component;
+
+----------------------------------------------------------------
+-- EX_MEM
+----------------------------------------------------------------
+component EX_MEM is
+	Port (CLK							:	in STD_LOGIC;
+			EXMEM_Flush					:	in STD_LOGIC;
+			EXMEM_Stall					:	in STD_LOGIC;
+			EXMEM_BranchIn				:	in STD_LOGIC;
+			EXMEM_BranchTargetIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+			EXMEM_MemreadIn			:	in STD_LOGIC;
+			EXMEM_MemtoRegIn			:	in STD_LOGIC;
+			EXMEM_MemwriteIn			:	in STD_LOGIC;
+			EXMEM_ALUZeroIn			:	in STD_LOGIC;
+			EXMEM_ALUResult1In		:	in STD_LOGIC_VECTOR(31 downto 0);
+			EXMEM_ALUResult2In		:  in STD_LOGIC_VECTOR(31 downto 0);
+			EXMEM_WriteDataMemIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+			EXMEM_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+
+			EXMEM_BranchOut			:	out STD_LOGIC;
+			EXMEM_BranchTargetOut	:	out STD_LOGIC_VECTOR(31 downto 0);
+			EXMEM_MemreadOut			:	out STD_LOGIC;
+			EXMEM_MemtoRegOut			:	out STD_LOGIC;
+			EXMEM_MemwriteOut			:	out STD_LOGIC;
+			EXMEM_ALUZeroOut			:	out STD_LOGIC;
+			EXMEM_ALUResult1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
+			EXMEM_ALUResult2Out		:  out STD_LOGIC_VECTOR(31 downto 0);
+			EXMEM_WriteDataMemOut	:	out STD_LOGIC_VECTOR(31 downto 0);
+			EXMEM_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0)
+			);
+end component;
+
+----------------------------------------------------------------
+-- MEM_WB
+----------------------------------------------------------------
+component MEM_WB is
+	Port (CLK					 		:	in STD_LOGIC;
+			MEMWB_Flush					:	in STD_LOGIC;
+			MEMWB_Stall					:	in STD_LOGIC;
+			MEMWB_MemtoRegIn			:	in STD_LOGIC;
+			MEMWB_MemReadDataIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+			MEMWB_ALUResult1In		:	in STD_LOGIC_VECTOR(31 downto 0);
+			MEMWB_ALUResult2In		:	in STD_LOGIC_VECTOR(31 downto 0);
+			MEMWB_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+			
+			MEMWB_MemtoRegOut			:	out STD_LOGIC;
+			MEMWB_MemReadDataOut		:	out STD_LOGIC_VECTOR(31 downto 0);
+			MEMWB_ALUResult1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
+			MEMWB_ALUResult2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
+			MEMWB_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0)
+			);
+end component;
+
+----------------------------------------------------------------
 -- PC Signals
 ----------------------------------------------------------------
 	signal	PC_in 		:  STD_LOGIC_VECTOR (31 downto 0) := x"00400000";
