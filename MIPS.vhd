@@ -271,14 +271,14 @@ end component;
 	signal	WriteData_Reg 	:  STD_LOGIC_VECTOR (31 downto 0);
 	
 ----------------------------------------------------------------
--- Hi/Lo Register signals
+-- Hi/Lo Register Signals
 ----------------------------------------------------------------								
    signal  WriteData_HiLo : STD_LOGIC_VECTOR (63 downto 0);
    signal  ReadData_HiLo  : STD_LOGIC_VECTOR (63 downto 0);
 	signal  RegWrite_HiLo  : STD_LOGIC;
 	
 ----------------------------------------------------------------
--- CoProcessor0 signals
+-- CoProcessor0 Signals
 ----------------------------------------------------------------								
    signal  CoProAddr_Read   : STD_LOGIC_VECTOR(4 downto 0);
 	signal  CoProcessorIn    : STD_LOGIC_VECTOR(31 downto 0);
@@ -298,6 +298,60 @@ end component;
 	--<any other signals used goes here>
 	signal PCPlus4 	: STD_LOGIC_VECTOR (31 downto 0) := x"00400000";
 	signal ALU_func	: STD_LOGIC_VECTOR (4 downto 0);
+	
+----------------------------------------------------------------
+-- IF_ID Signals
+----------------------------------------------------------------
+	signal	IFID_Flush			: 	STD_LOGIC;
+	signal	IFID_Stall			: 	STD_LOGIC;
+	signal	IFID_PCPlus4In		:	STD_LOGIC_VECTOR(31 downto 0);
+	signal	IFID_InstrIn		:	STD_LOGIC_VECTOR(31 downto 0);
+		
+	signal	IFID_PCPlus4Out	:	STD_LOGIC_VECTOR(31 downto 0);
+	signal	IFID_InstrOut		:  STD_LOGIC_VECTOR(31 downto 0);
+	
+----------------------------------------------------------------
+-- ID_EX Signals
+----------------------------------------------------------------
+	signal	IDEX_Flush				: STD_LOGIC;
+	signal	IDEX_Stall				: STD_LOGIC;
+	signal	IDEX_BranchIn			: STD_LOGIC;
+	signal	IDEX_ALUOpIn			: STD_LOGIC_VECTOR(1 downto 0);
+	signal	IDEX_MemreadIn			: STD_LOGIC;
+	signal	IDEX_MemtoRegIn		: STD_LOGIC;
+	signal	IDEX_MemwriteIn		: STD_LOGIC;
+	signal	IDEX_ALUSrcIn			: STD_LOGIC;
+	signal	IDEX_RegDstIn			: STD_LOGIC;
+	signal	IDEX_Instr20To11In	: STD_LOGIC_VECTOR(9 downto 0);
+	signal	IDEX_PCPlus4In			: STD_LOGIC_VECTOR(31 downto 0);
+	signal	IDEX_ReadData1In		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	IDEX_ReadData2In		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	IDEX_SignExtendedIn	: STD_LOGIC_VECTOR(31 downto 0);
+		
+	signal	IDEX_BranchOut			: STD_LOGIC;
+	signal	IDEX_ALUOpOut			: STD_LOGIC_VECTOR(1 downto 0);
+	signal	IDEX_MemreadOut		: STD_LOGIC;
+	signal	IDEX_MemtoRegOut		: STD_LOGIC;
+	signal	IDEX_MemwriteOut		: STD_LOGIC;
+	signal	IDEX_ALUSrcOut			: STD_LOGIC;
+	signal	IDEX_RegDstOut			: STD_LOGIC;
+	signal	IDEX_Instr20To11Out	: STD_LOGIC_VECTOR(9 downto 0);
+	signal	IDEX_PCPlus4Out		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	IDEX_ReadData1Out		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	IDEX_ReadData2Out		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	IDEX_SignExtendedOut	: STD_LOGIC_VECTOR(31 downto 0);
+
+----------------------------------------------------------------
+-- EX_MEM Signals
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+-- MEM_WB Signals
+----------------------------------------------------------------
+
+
+
+
 
 ----------------------------------------------------------------	
 ----------------------------------------------------------------
