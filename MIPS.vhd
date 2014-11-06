@@ -311,7 +311,8 @@ Data_Out <=	ReadData2_Reg;
 -- Input for PC
 PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
 			  PC_out;
-PC_In <= (PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' else
+PC_In <= Readdata1_Reg when ALUOp = "00" and Instr(5 downto 1) = "00100" else -- JR, JALR
+			(PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' else
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Result1(0) = '0' else -- bgez
 			PCPlus4;
@@ -362,12 +363,12 @@ ReadAddr1_Reg <= Instr(25 downto 21);
 ReadAddr2_Reg <= Instr(20 downto 16);
 WriteAddr_Reg <= "11111" when ((Instr(31 downto 26) = "000001" and 
 						(Instr(20 downto 16) = "10001" or Instr(20 downto 16) = "10000")) or 
-						Instr(31 downto 26) = "000011") else	--bgezal or bltzal or jal
+						Instr(31 downto 26) = "000011" or (ALUOp = "00" and Instr(5 downto 0) = "001001")) else	--bgezal or bltzal or jal or jalr
 						Instr(20 downto 16) when RegDst = '0' else
 					  Instr(15 downto 11);
-WriteData_Reg <= PCPlus4 + x"00000004" when ((Instr(31 downto 26) = "000001" and 
+WriteData_Reg <= PC_in + 4 when ((Instr(31 downto 26) = "000001" and 
 						(Instr(20 downto 16) = "10001" or Instr(20 downto 16) = "10000")) or 
-						Instr(31 downto 26) = "000011") else	--bgezal or bltzal or jal
+						Instr(31 downto 26) = "000011" or (ALUOp = "00" and Instr(5 downto 0) = "001001")) else	--bgezal or bltzal or jal or jalr
 						Data_in when MemtoReg = '1' else
 					  (Instr(15 downto 0) & x"0000") when InstrtoReg = '1' else
 					  ReadData_HiLo(63 downto 32) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010000") else
