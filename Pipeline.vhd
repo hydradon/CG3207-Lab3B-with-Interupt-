@@ -164,6 +164,7 @@ Port (CLK							:	in STD_LOGIC;
 		);
 end EX_MEM;
 
+
 architecture arch_EXMEM of EX_MEM is
 begin
 process (CLK)
