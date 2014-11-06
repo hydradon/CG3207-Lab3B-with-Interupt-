@@ -454,12 +454,61 @@ SignExtender1		:SignExtender port map
 						Input => SignEx_In,
 						Output => SignEx_Out
 						);
+						
+----------------------------------------------------------------
+-- IF_ID port map
+----------------------------------------------------------------
+IF_ID1	: IF_ID port map
+			(
+			CLK					=> CLK,
+			IFID_Flush			=> IFID_Flush,
+			IFID_Stall			=> IFID_Stall,
+			IFID_PCPlus4In		=> IFID_PCPlus4In,
+			IFID_InstrIn		=> IFID_InstrIn,
+		
+			IFID_PCPlus4Out	=> IFID_PCPlus4Out,
+			IFID_InstrOut		=> IFID_InstrOut
+			);
+
+----------------------------------------------------------------
+-- ID_EX port map
+----------------------------------------------------------------
+ID_EX1: ID_EX port map
+		(
+		CLK						=>	CLK,
+		IDEX_Flush				=> IDEX_Flush,
+		IDEX_Stall				=> IDEX_Stall,
+		IDEX_BranchIn			=> IDEX_BranchIn,
+		IDEX_ALUOpIn			=> IDEX_ALUOpIn,
+		IDEX_MemreadIn			=> IDEX_MemreadIn,
+		IDEX_MemtoRegIn		=> IDEX_MemtoRegIn,
+		IDEX_MemwriteIn		=> IDEX_MemwriteIn,
+		IDEX_ALUSrcIn			=> IDEX_ALUSrcIn,
+		IDEX_RegDstIn			=> IDEX_RegDstIn,
+		IDEX_Instr20To11In	=> IDEX_Instr20To11In,
+		IDEX_PCPlus4In			=> IDEX_PCPlus4In,
+		IDEX_ReadData1In		=> IDEX_ReadData1In,
+		IDEX_ReadData2In		=> IDEX_ReadData2In,
+		IDEX_SignExtendedIn	=> IDEX_SignExtendedIn,
+		
+		IDEX_BranchOut			=> IDEX_BranchOut,
+		IDEX_ALUOpOut			=> IDEX_ALUOpOut,
+		IDEX_MemreadOut		=> IDEX_MemreadOut,
+		IDEX_MemtoRegOut		=> IDEX_MemtoRegOut,
+		IDEX_MemwriteOut		=> IDEX_MemwriteOut,
+		IDEX_ALUSrcOut			=> IDEX_ALUSrcOut,
+		IDEX_RegDstOut			=> IDEX_RegDstOut,
+		IDEX_Instr20To11Out	=> IDEX_Instr20To11Out,
+		IDEX_PCPlus4Out		=> IDEX_PCPlus4Out,
+		IDEX_ReadData1Out		=> IDEX_ReadData1Out,
+		IDEX_ReadData2Out		=> IDEX_ReadData2Out,
+		IDEX_SignExtendedOut	=> IDEX_SignExtendedOut
+		);
+
 ----------------------------------------------------------------
 -- Processor logic
 ----------------------------------------------------------------
 --<Rest of the logic goes here>
-
-
 
 
 -- Input for ControlUnit
