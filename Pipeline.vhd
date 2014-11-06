@@ -55,6 +55,9 @@ end arch_IFID;
 ----------------------------------------------------------------------------------
 -- ID_EX Pipeline Register
 ----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
 entity ID_EX is
 Port (CLK						:	in STD_LOGIC;
 		IDEX_Flush				:	in STD_LOGIC;
@@ -104,9 +107,9 @@ begin
 			IDEX_MemwriteOut		<= '0';
 			IDEX_ALUSrcOut			<= '0';
 			IDEX_RegDstOut			<= '0';
-			IDEX_RegRsIn			<= "00000";
-			IDEX_RegRtIn			<= "00000";
-			IDEX_RegRdIn			<= "00000";
+			IDEX_RegRsOut			<= "00000";
+			IDEX_RegRtOut			<= "00000";
+			IDEX_RegRdOut			<= "00000";
 			IDEX_PCPlus4Out		<= x"00000000";
 			IDEX_ReadData1Out		<= x"00000000";
 			IDEX_ReadData2Out		<= x"00000000";
@@ -136,6 +139,9 @@ end arch_IDEX;
 ----------------------------------------------------------------------------------
 -- EX_MEM Pipeline Register
 ----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
 entity EX_MEM is
 Port (CLK							:	in STD_LOGIC;
 		EXMEM_Flush					:	in STD_LOGIC;
@@ -202,6 +208,9 @@ end arch_EXMEM;
 ----------------------------------------------------------------------------------
 -- MEM_WB Pipeline Register
 ----------------------------------------------------------------------------------
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
 entity MEM_WB is
 Port (CLK					 		:	in STD_LOGIC;
 		MEMWB_Flush					:	in STD_LOGIC;

@@ -172,9 +172,9 @@ component ID_EX is
 			IDEX_MemwriteOut		:  out STD_LOGIC;
 			IDEX_ALUSrcOut			:	out STD_LOGIC;
 			IDEX_RegDstOut			:	out STD_LOGIC;
-			IDEX_RegRsOut			: 	in STD_LOGIC_VECTOR(4 downto 0);
-			IDEX_RegRtOut			: 	in STD_LOGIC_VECTOR(4 downto 0);
-			IDEX_RegRdOut			: 	in STD_LOGIC_VECTOR(4 downto 0);
+			IDEX_RegRsOut			: 	out STD_LOGIC_VECTOR(4 downto 0);
+			IDEX_RegRtOut			: 	out STD_LOGIC_VECTOR(4 downto 0);
+			IDEX_RegRdOut			: 	out STD_LOGIC_VECTOR(4 downto 0);
 			IDEX_PCPlus4Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 			IDEX_ReadData1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 			IDEX_ReadData2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
