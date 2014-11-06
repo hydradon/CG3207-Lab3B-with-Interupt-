@@ -31,7 +31,8 @@ Port (CLK					: 	in STD_LOGIC;
 		IFID_InstrIn		:	in STD_LOGIC_VECTOR(31 downto 0);
 		
 		IFID_PCPlus4Out	:	out STD_LOGIC_VECTOR(31 downto 0);
-		IFID_InstrOut		: 	out STD_LOGIC_VECTOR(31 downto 0));
+		IFID_InstrOut		: 	out STD_LOGIC_VECTOR(31 downto 0)
+		);
 end Pipeline;
 
 architecture arch_IFID of IF_ID is
@@ -82,7 +83,7 @@ Port (CLK						:	in STD_LOGIC;
 		IDEX_PCPlus4Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 		IDEX_ReadData1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 		IDEX_ReadData2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
-		IDEX_SignExtendedOut	:	out STD_LOGIC_VECTOR(31 downto 0);
+		IDEX_SignExtendedOut	:	out STD_LOGIC_VECTOR(31 downto 0)
 		);
 end Pipeline;
 
@@ -142,16 +143,16 @@ Port (CLK							:	in STD_LOGIC;
 		EXMEM_WriteDataMemIn		:	in STD_LOGIC_VECTOR(31 downto 0);
 		EXMEM_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(31 downto 0);
 
-		EXMEM_BranchOut			:	in STD_LOGIC;
-		EXMEM_BranchTargetOut	:	in STD_LOGIC_VECTOR(31 downto 0);
-		EXMEM_MemreadOut			:	in STD_LOGIC;
-		EXMEM_MemtoRegOut			:	in STD_LOGIC;
-		EXMEM_MemwriteIn			:	in STD_LOGIC;
-		EXMEM_ALUZeroIn			:	in STD_LOGIC;
-		EXMEM_ALUResult1In		:	in STD_LOGIC_VECTOR(31 downto 0);
-		EXMEM_ALUResult2In		:  in STD_LOGIC_VECTOR(31 downto 0);
-		EXMEM_WriteDataMemIn		:	in STD_LOGIC_VECTOR(31 downto 0);
-		EXMEM_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+		EXMEM_BranchOut			:	out STD_LOGIC;
+		EXMEM_BranchTargetOut	:	out STD_LOGIC_VECTOR(31 downto 0);
+		EXMEM_MemreadOut			:	out STD_LOGIC;
+		EXMEM_MemtoRegOut			:	out STD_LOGIC;
+		EXMEM_MemwriteOut			:	out STD_LOGIC;
+		EXMEM_ALUZeroOut			:	out STD_LOGIC;
+		EXMEM_ALUResult1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
+		EXMEM_ALUResult2Out		:  out STD_LOGIC_VECTOR(31 downto 0);
+		EXMEM_WriteDataMemOut	:	out STD_LOGIC_VECTOR(31 downto 0);
+		EXMEM_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0)
 		);
 end Pipeline;
 
@@ -160,8 +161,29 @@ begin
 process (CLK)
 begin
 	if rising_edge(CLK) then
-		if RESET = '1' then
-		else
+		if EXMEM_Flush = '1' then
+			EXMEM_BranchOut			<= '0';
+			EXMEM_BranchTargetOut	<= x"00000000";
+			EXMEM_MemreadOut			<= '0';
+			EXMEM_MemtoRegOut			<= '0';
+			EXMEM_MemwriteOut			<= '0';
+			EXMEM_ALUZeroOut			<= '0';
+			EXMEM_ALUResult1Out		<= x"00000000";
+			EXMEM_ALUResult2Out		<= x"00000000";
+			EXMEM_WriteDataMemOut	<= x"00000000";
+			EXMEM_WriteAddrRegOut	<= x"00000000";
+			
+		elsif EXMEM_Stall = '0' then
+			EXMEM_BranchOut			<=	EXMEM_BranchIn;
+			EXMEM_BranchTargetOut	<=	EXMEM_BranchTargetIn;
+			EXMEM_MemreadOut			<=	EXMEM_MemreadIn;
+			EXMEM_MemtoRegOut			<=	EXMEM_MemtoRegIn;
+			EXMEM_MemwriteOut			<=	EXMEM_MemwriteIn;
+			EXMEM_ALUZeroOut			<=	EXMEM_ALUZeroIn;
+			EXMEM_ALUResult1Out		<=	EXMEM_ALUResult1In;
+			EXMEM_ALUResult2Out		<= EXMEM_ALUResult2In;
+			EXMEM_WriteDataMemOut	<=	EXMEM_WriteDataMemIn;
+			EXMEM_WriteAddrRegOut	<=	EXMEM_WriteAddrRegIn;
 		end if;
 	end if;
 end process;
