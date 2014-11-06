@@ -538,6 +538,58 @@ ID_EX1: ID_EX port map
 		);
 
 ----------------------------------------------------------------
+-- EX_MEM port map
+----------------------------------------------------------------
+EX_MEM1	:EX_MEM port map
+		(
+		CLK							=>	CLK,
+		EXMEM_Flush					=>	EXMEM_Flush,
+		EXMEM_Stall					=>	EXMEM_Stall,
+		EXMEM_BranchIn				=>	EXMEM_BranchIn,
+		EXMEM_BranchTargetIn		=>	EXMEM_BranchTargetIn,
+		EXMEM_MemreadIn			=>	EXMEM_MemreadIn,
+		EXMEM_MemtoRegIn			=>	EXMEM_MemtoRegIn,
+		EXMEM_MemwriteIn			=>	EXMEM_MemwriteIn,
+		EXMEM_ALUZeroIn			=>	EXMEM_ALUZeroIn,
+		EXMEM_ALUResult1In		=>	EXMEM_ALUResult1In,
+		EXMEM_ALUResult2In		=> EXMEM_ALUResult2In,
+		EXMEM_WriteDataMemIn		=>	EXMEM_WriteDataMemIn,
+		EXMEM_WriteAddrRegIn		=>	EXMEM_WriteAddrRegIn,
+
+		EXMEM_BranchOut			=>	EXMEM_BranchOut,
+		EXMEM_BranchTargetOut	=>	EXMEM_BranchTargetOut,
+		EXMEM_MemreadOut			=>	EXMEM_MemreadOut,
+		EXMEM_MemtoRegOut			=>	EXMEM_MemtoRegOut,	
+		EXMEM_MemwriteOut			=>	EXMEM_MemwriteOut,
+		EXMEM_ALUZeroOut			=>	EXMEM_ALUZeroOut,
+		EXMEM_ALUResult1Out		=>	EXMEM_ALUResult1Out,
+		EXMEM_ALUResult2Out		=> EXMEM_ALUResult2Out,
+		EXMEM_WriteDataMemOut	=>	EXMEM_WriteDataMemOut,
+		EXMEM_WriteAddrRegOut	=>	EXMEM_WriteAddrRegOut
+		);
+		
+----------------------------------------------------------------
+-- MEM_WB port map
+----------------------------------------------------------------
+MEM_WB1	:MEM_WB port map
+		(
+		CLK					 		=>	CLK,
+		MEMWB_Flush					=>	MEMWB_Flush,
+		MEMWB_Stall					=>	MEMWB_Stall,
+		MEMWB_MemtoRegIn			=>	MEMWB_MemtoRegIn,
+		MEMWB_MemReadDataIn		=>	MEMWB_MemReadDataIn,
+		MEMWB_ALUResult1In		=>	MEMWB_ALUResult1In,
+		MEMWB_ALUResult2In		=>	MEMWB_ALUResult2In,
+		MEMWB_WriteAddrRegIn		=>	MEMWB_WriteAddrRegIn,
+		
+		MEMWB_MemtoRegOut			=> MEMWB_MemtoRegOut,
+		MEMWB_MemReadDataOut		=>	MEMWB_MemReadDataOut,
+		MEMWB_ALUResult1Out		=> MEMWB_ALUResult1Out,
+		MEMWB_ALUResult2Out		=>	MEMWB_ALUResult2Out,
+		MEMWB_WriteAddrRegOut	=>	MEMWB_WriteAddrRegOut
+		);
+		
+----------------------------------------------------------------
 -- Processor logic
 ----------------------------------------------------------------
 --<Rest of the logic goes here>
