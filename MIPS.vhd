@@ -341,7 +341,9 @@ end component;
 	signal	IDEX_MemwriteOut		: STD_LOGIC;
 	signal	IDEX_ALUSrcOut			: STD_LOGIC;
 	signal	IDEX_RegDstOut			: STD_LOGIC;
-	signal	IDEX_Instr20To11Out	: STD_LOGIC_VECTOR(9 downto 0);
+	signal 	IDEX_RegRsOut			: STD_LOGIC_VECTOR(4 downto 0);
+	signal 	IDEX_RegRtOut			: STD_LOGIC_VECTOR(4 downto 0);
+	signal 	IDEX_RegRdOut			: STD_LOGIC_VECTOR(4 downto 0);
 	signal	IDEX_PCPlus4Out		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	IDEX_ReadData1Out		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	IDEX_ReadData2Out		: STD_LOGIC_VECTOR(31 downto 0);
@@ -523,7 +525,9 @@ ID_EX1: ID_EX port map
 		IDEX_MemwriteIn		=> IDEX_MemwriteIn,
 		IDEX_ALUSrcIn			=> IDEX_ALUSrcIn,
 		IDEX_RegDstIn			=> IDEX_RegDstIn,
-		IDEX_Instr20To11In	=> IDEX_Instr20To11In,
+		IDEX_RegRsIn			=> IDEX_RegRsIn,
+		IDEX_RegRtIn			=>	IDEX_RegRtIn,
+		IDEX_RegRdIn			=>	IDEX_RegRdIn,
 		IDEX_PCPlus4In			=> IDEX_PCPlus4In,
 		IDEX_ReadData1In		=> IDEX_ReadData1In,
 		IDEX_ReadData2In		=> IDEX_ReadData2In,
@@ -536,7 +540,9 @@ ID_EX1: ID_EX port map
 		IDEX_MemwriteOut		=> IDEX_MemwriteOut,
 		IDEX_ALUSrcOut			=> IDEX_ALUSrcOut,
 		IDEX_RegDstOut			=> IDEX_RegDstOut,
-		IDEX_Instr20To11Out	=> IDEX_Instr20To11Out,
+		IDEX_RegRsOut			=> IDEX_RegRsOut,
+		IDEX_RegRtOut			=>	IDEX_RegRtOut,
+		IDEX_RegRdOut			=>	IDEX_RegRdOut,
 		IDEX_PCPlus4Out		=> IDEX_PCPlus4Out,
 		IDEX_ReadData1Out		=> IDEX_ReadData1Out,
 		IDEX_ReadData2Out		=> IDEX_ReadData2Out,
@@ -605,7 +611,7 @@ MEM_WB1	:MEM_WB port map
 opcode <= Instr(31 downto 26);
 
 
---<-------- IF State ---------->
+--IF stage----------------------------------------------------------------------------------------------------------------
 
 -- Output to TOP
 Addr_Instr <= PC_out;
@@ -618,8 +624,11 @@ PC_In <= Readdata1_Reg when ALUOp = "00" and Instr(5 downto 1) = "00100" else --
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Result1(0) = '0' else -- bgez
 			PCPlus4;
+--end IF stage----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
 
---<-------- ID State ---------->
+
+--ID stage----------------------------------------------------------------------------------------------------------------
 -- Input for RegFile
 ReadAddr1_Reg <= Instr(25 downto 21);
 ReadAddr2_Reg <= Instr(20 downto 16);
@@ -628,8 +637,12 @@ ReadAddr2_Reg <= Instr(20 downto 16);
 -- Input for SignExtender
 SignEx_In <= Instr(15 downto 0);
 
+--end ID stage----------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+
+
 			
---<-------- EX State ---------->
+--EX stage----------------------------------------------------------------------------------------------------------------
 -- Input for ALU
 ALU_InA <= ReadData2_Reg when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "000") else
 				ReadData1_Reg;
@@ -667,17 +680,25 @@ ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch
 				"XXXXX";														-- unknown operation
 ALU_Control <= RESET & ALU_Func;	
 
+
 -- Input for RegHiLo
 RegWrite_HiLo <= '1' when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
 					  '0';
 WriteData_HiLo <= ALU_Result2 & ALU_Result1;
 
---<-------- MEM State ---------->
+---end EX stage---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+
+---MEM stage------------------------------------------------------------------------------------------------------------------
+
 -- Output to TOP
 Addr_Data <= ALU_Result1;
 Data_Out <=	ReadData2_Reg;
 
---<-------- WB State ---------->
+---end MEM stage---------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------
+
+---WB stage-------------------------------------------------------------------------------------------------------------------
 WriteAddr_Reg <= "11111" when ((Instr(31 downto 26) = "000001" and 
 						(Instr(20 downto 16) = "10001" or Instr(20 downto 16) = "10000")) or 
 						Instr(31 downto 26) = "000011" or (ALUOp = "00" and Instr(5 downto 0) = "001001")) else	--bgezal or bltzal or jal or jalr
