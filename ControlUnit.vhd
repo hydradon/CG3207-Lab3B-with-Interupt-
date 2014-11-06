@@ -148,7 +148,7 @@ begin
 			SignExtend <= '1';
 			RegWrite <= '0';
 			RegDst <= 'X';
-		when "000001" => -- BGEZ
+		when "000001" => -- BGEZ or BGEZAL
 			ALUOp <= "10";
 			Branch <= '1';
 			Jump <= '0';
@@ -172,7 +172,18 @@ begin
 			SignExtend <= '0';
 			RegWrite <= '0';
 			RegDst <= 'X';
-		--when "000011" => -- JAL
+		when "000011" => -- JAL
+			ALUOp <= "XX";
+			Branch <= '0';
+			Jump <= '1';
+			MemRead <= '0';
+			MemToReg <= 'X';
+			InstrtoReg <= '0';
+			MemWrite <= '0';
+			ALUSrc <= 'X';
+			SignExtend <= '0';
+			RegWrite <= '1';
+			RegDst <= 'X';
 		
 		when "010000" => -- MFC0 & MTC0 & ERET
 			ALUOp <= "XX";

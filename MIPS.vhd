@@ -336,12 +336,16 @@ ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch
 				"00100" when Instr(5 downto 0) = "100110" else	-- xor
 				"00010" when Instr(5 downto 0) = "100000" else	-- add
 				"00110" when Instr(5 downto 0) = "100010" else	-- sub
-				"00111" when (Instr(31 downto 26) = "001010" or Instr(31 downto 26) = "000001") else -- slti, bgez
-				"00111" when Instr(5 downto 0) = "101010" else	-- slt
+				"00111" when (Instr(31 downto 26) = "001010" or 
+				Instr(31 downto 26) = "000001" or 
+				Instr(5 downto 0) = "101010") else -- slti, bgez, slt
 				"01110" when Instr(5 downto 0) = "101011"else	-- sltu
-				"00101" when (Instr(5 downto 0) = "000000" or Instr(5 downto 0) = "000100") else	-- sll, sllv
-				"01101" when (Instr(5 downto 0) = "000010" or Instr(5 downto 0) = "000110") else	-- srl, srlv
-				"01001" when (Instr(5 downto 0) = "000011" or Instr(5 downto 0) = "000111") else	-- sra, srav
+				"00101" when (Instr(5 downto 0) = "000000" or 
+				Instr(5 downto 0) = "000100") else	-- sll, sllv
+				"01101" when (Instr(5 downto 0) = "000010" or 
+				Instr(5 downto 0) = "000110") else	-- srl, srlv
+				"01001" when (Instr(5 downto 0) = "000011" or 
+				Instr(5 downto 0) = "000111") else	-- sra, srav
 				"10000" when Instr(5 downto 0) = "011000" else	-- mult
 				"10001" when Instr(5 downto 0) = "011001" else	-- multu
 				"10010" when Instr(5 downto 0) = "011010" else	-- div
@@ -356,9 +360,15 @@ opcode <= Instr(31 downto 26);
 -- Input for RegFile
 ReadAddr1_Reg <= Instr(25 downto 21);
 ReadAddr2_Reg <= Instr(20 downto 16);
-WriteAddr_Reg <= Instr(20 downto 16) when RegDst = '0' else
+WriteAddr_Reg <= "11111" when ((Instr(31 downto 26) = "000001" and 
+						(Instr(20 downto 16) = "10001" or Instr(20 downto 16) = "10000")) or 
+						Instr(31 downto 26) = "000011") else	--bgezal or bltzal or jal
+						Instr(20 downto 16) when RegDst = '0' else
 					  Instr(15 downto 11);
-WriteData_Reg <= Data_in when MemtoReg = '1' else
+WriteData_Reg <= PCPlus4 + x"00000004" when ((Instr(31 downto 26) = "000001" and 
+						(Instr(20 downto 16) = "10001" or Instr(20 downto 16) = "10000")) or 
+						Instr(31 downto 26) = "000011") else	--bgezal or bltzal or jal
+						Data_in when MemtoReg = '1' else
 					  (Instr(15 downto 0) & x"0000") when InstrtoReg = '1' else
 					  ReadData_HiLo(63 downto 32) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010000") else
 					  ReadData_HiLo(31 downto 0) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010010") else
