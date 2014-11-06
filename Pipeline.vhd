@@ -207,7 +207,7 @@ Port (CLK					 		:	in STD_LOGIC;
 		MEMWB_MemReadDataOut		:	out STD_LOGIC_VECTOR(31 downto 0);
 		MEMWB_ALUResult1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 		MEMWB_ALUResult2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
-		MEMWB_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0);
+		MEMWB_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0)
 		);
 end Pipeline;
 
