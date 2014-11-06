@@ -546,6 +546,7 @@ ID_EX1: ID_EX port map
 -- Input for ControlUnit
 opcode <= Instr(31 downto 26);
 
+
 --IF stage----------------------------------------------------------------------------------------------------------------
 
 -- Output to TOP
