@@ -200,7 +200,7 @@ component EX_MEM is
 			EXMEM_ALUResult1In		:	in STD_LOGIC_VECTOR(31 downto 0);
 			EXMEM_ALUResult2In		:  in STD_LOGIC_VECTOR(31 downto 0);
 			EXMEM_WriteDataMemIn		:	in STD_LOGIC_VECTOR(31 downto 0);
-			EXMEM_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+			EXMEM_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(4 downto 0);
 
 			EXMEM_BranchOut			:	out STD_LOGIC;
 			EXMEM_BranchTargetOut	:	out STD_LOGIC_VECTOR(31 downto 0);
@@ -211,7 +211,7 @@ component EX_MEM is
 			EXMEM_ALUResult1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 			EXMEM_ALUResult2Out		:  out STD_LOGIC_VECTOR(31 downto 0);
 			EXMEM_WriteDataMemOut	:	out STD_LOGIC_VECTOR(31 downto 0);
-			EXMEM_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0)
+			EXMEM_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(4 downto 0)
 			);
 end component;
 
@@ -226,13 +226,13 @@ component MEM_WB is
 			MEMWB_MemReadDataIn		:	in STD_LOGIC_VECTOR(31 downto 0);
 			MEMWB_ALUResult1In		:	in STD_LOGIC_VECTOR(31 downto 0);
 			MEMWB_ALUResult2In		:	in STD_LOGIC_VECTOR(31 downto 0);
-			MEMWB_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+			MEMWB_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(4 downto 0);
 			
 			MEMWB_MemtoRegOut			:	out STD_LOGIC;
 			MEMWB_MemReadDataOut		:	out STD_LOGIC_VECTOR(31 downto 0);
 			MEMWB_ALUResult1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 			MEMWB_ALUResult2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
-			MEMWB_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0)
+			MEMWB_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(4 downto 0)
 			);
 end component;
 
@@ -258,7 +258,9 @@ end component;
  	signal	opcode 		:  STD_LOGIC_VECTOR (5 downto 0);
 	signal	ALUOp 		:  STD_LOGIC_VECTOR (1 downto 0);
 	signal	Branch 		:  STD_LOGIC;
-	signal	Jump	 		:  STD_LOGIC;	
+	signal	Jump	 		:  STD_LOGIC;
+	signal	CUMemread	:	STD_LOGIC;
+	signal	CUMemwrite	:	STD_LOGIC;
 	signal	MemtoReg 	:  STD_LOGIC;
 	signal 	InstrtoReg	: 	STD_LOGIC;		
 	signal	ALUSrc 		:  STD_LOGIC;	
@@ -367,7 +369,7 @@ end component;
 	signal	EXMEM_ALUResult1In		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	EXMEM_ALUResult2In		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	EXMEM_WriteDataMemIn		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	EXMEM_WriteAddrRegIn		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	EXMEM_WriteAddrRegIn		: STD_LOGIC_VECTOR(4 downto 0);
 
 	signal	EXMEM_BranchOut			: STD_LOGIC;
 	signal	EXMEM_BranchTargetOut	: STD_LOGIC_VECTOR(31 downto 0);
@@ -378,7 +380,7 @@ end component;
 	signal	EXMEM_ALUResult1Out		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	EXMEM_ALUResult2Out		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	EXMEM_WriteDataMemOut	: STD_LOGIC_VECTOR(31 downto 0);
-	signal	EXMEM_WriteAddrRegOut	: STD_LOGIC_VECTOR(31 downto 0);
+	signal	EXMEM_WriteAddrRegOut	: STD_LOGIC_VECTOR(4 downto 0);
 	
 ----------------------------------------------------------------
 -- MEM_WB Signals
@@ -389,13 +391,13 @@ end component;
 	signal	MEMWB_MemReadDataIn		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	MEMWB_ALUResult1In		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	MEMWB_ALUResult2In		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	MEMWB_WriteAddrRegIn		: STD_LOGIC_VECTOR(31 downto 0);
-		
+	signal	MEMWB_WriteAddrRegIn		: STD_LOGIC_VECTOR(4 downto 0);
+	
 	signal	MEMWB_MemtoRegOut			: STD_LOGIC;
 	signal	MEMWB_MemReadDataOut		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	MEMWB_ALUResult1Out		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	MEMWB_ALUResult2Out		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	MEMWB_WriteAddrRegOut	: STD_LOGIC_VECTOR(31 downto 0);
+	signal	MEMWB_WriteAddrRegOut	: STD_LOGIC_VECTOR(4 downto 0);
 
 ----------------------------------------------------------------	
 ----------------------------------------------------------------
@@ -440,10 +442,10 @@ ControlUnit1 	: ControlUnit port map
 						ALUOp 		=> ALUOp, 
 						Branch 		=> Branch, 
 						Jump 			=> Jump, 
-						MemRead 		=> MemRead, 
+						MemRead 		=> CUMemRead, 
 						MemtoReg 	=> MemtoReg, 
 						InstrtoReg 	=> InstrtoReg, 
-						MemWrite 	=> MemWrite, 
+						MemWrite 	=> CUMemWrite, 
 						ALUSrc 		=> ALUSrc, 
 						SignExtend 	=> SignExtend, 
 						RegWrite 	=> RegWrite,
@@ -551,7 +553,7 @@ ID_EX1: ID_EX port map
 		IDEX_PCPlus4Out		=> IDEX_PCPlus4Out,
 		IDEX_ReadData1Out		=> IDEX_ReadData1Out,
 		IDEX_ReadData2Out		=> IDEX_ReadData2Out,
-		IDEX_SignExtendOut	=> IDEX_SignExtendOut
+		IDEX_SignExtendOut	=> IDEX_SignExtendOut,
 		IDEX_SignExtendedOut	=> IDEX_SignExtendedOut
 		);
 
@@ -649,9 +651,9 @@ SignEx_In <= IFID_InstrOut(15 downto 0);
 -- Input for ID/EX
 IDEX_BranchIn <= Branch;
 IDEX_ALUOpIn <= ALUOp;
-IDEX_MemreadIn <= MemRead;
+IDEX_MemreadIn <= CUMemRead;
 IDEX_MemtoRegIn <= MemtoReg;
-IDEX_MemwriteIn <= MemWrite;
+IDEX_MemwriteIn <= CUMemWrite;
 IDEX_ALUSrcIn <= ALUSrc;
 IDEX_RegDstIn <= RegDst;
 IDEX_RegRsIn <= IFID_InstrOut(25 downto 21);
@@ -684,7 +686,7 @@ ALU_InB <= (x"000000" & "000" & IDEX_SignExtendedOut(10 downto 6)) when (IDEX_AL
 ALU_Func <= "00110" when IDEX_ALUOpOut = "01" else						-- add when branch
 				"00010" when IDEX_ALUOpOut = "00" else						-- add when lw, sw, addiu, addi
 				"00001" when IDEX_ALUOpOut = "11" else 					-- or when ori
-				"00000" when IDEX_SignExtnededOut(5 downto 0) = "100100" else	-- and
+				"00000" when IDEX_SignExtendedOut(5 downto 0) = "100100" else	-- and
 				"00001" when IDEX_SignExtendedOut(5 downto 0) = "100101" else	-- or
 				"01100" when IDEX_SignExtendedOut(5 downto 0) = "100111" else	-- nor
 				"00100" when IDEX_SignExtendedOut(5 downto 0) = "100110" else	-- xor
@@ -709,13 +711,13 @@ ALU_Func <= "00110" when IDEX_ALUOpOut = "01" else						-- add when branch
 ALU_Control <= RESET & ALU_Func;	
 
 -- Input for RegHiLo
-RegWrite_HiLo <= '1' when (IDEX_ALUOp = "00" and IDEX_SignExtendedOut(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
+RegWrite_HiLo <= '1' when (IDEX_ALUOpOut = "00" and IDEX_SignExtendedOut(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
 					  '0';
 WriteData_HiLo <= ALU_Result2 & ALU_Result1;
 
 -- Input to EX/MEM
 EXMEM_BranchIn <= IDEX_BranchOut;
-EXMEM_BranchTargetIn <= IDEX_PCPlus4Out + (IDEX_SignExtendOut(29 downto 0) & "00");
+EXMEM_BranchTargetIn <= IDEX_PCPlus4Out + (IDEX_SignExtendedOut(29 downto 0) & "00");
 EXMEM_MemreadIn <= IDEX_MemreadOut;
 EXMEM_MemtoRegIn <= IDEX_MemtoRegOut;
 EXMEM_MemwriteIn <= IDEX_MemwriteOut;
@@ -734,6 +736,8 @@ EXMEM_WriteAddrRegIn <= IDEX_RegRtOut when IDEX_RegDstOut = '0' else
 -- Output to TOP
 Addr_Data <= EXMEM_ALUResult1Out;
 Data_Out <=	EXMEM_WriteDataMemOut;
+Memread <= EXMEM_MemreadOut;
+Memwrite <= EXMEM_MemwriteOut;
 
 -- Input to MEM/WB
 MEMWB_MemtoRegIn <= EXMEM_MemtoRegOut;

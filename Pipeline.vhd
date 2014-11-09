@@ -159,7 +159,7 @@ Port (CLK							:	in STD_LOGIC;
 		EXMEM_ALUResult1In		:	in STD_LOGIC_VECTOR(31 downto 0);
 		EXMEM_ALUResult2In		:  in STD_LOGIC_VECTOR(31 downto 0);
 		EXMEM_WriteDataMemIn		:	in STD_LOGIC_VECTOR(31 downto 0);
-		EXMEM_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+		EXMEM_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(4 downto 0);
 
 		EXMEM_BranchOut			:	out STD_LOGIC;
 		EXMEM_BranchTargetOut	:	out STD_LOGIC_VECTOR(31 downto 0);
@@ -170,7 +170,7 @@ Port (CLK							:	in STD_LOGIC;
 		EXMEM_ALUResult1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 		EXMEM_ALUResult2Out		:  out STD_LOGIC_VECTOR(31 downto 0);
 		EXMEM_WriteDataMemOut	:	out STD_LOGIC_VECTOR(31 downto 0);
-		EXMEM_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0)
+		EXMEM_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(4 downto 0)
 		);
 end EX_MEM;
 
@@ -190,7 +190,7 @@ begin
 			EXMEM_ALUResult1Out		<= x"00000000";
 			EXMEM_ALUResult2Out		<= x"00000000";
 			EXMEM_WriteDataMemOut	<= x"00000000";
-			EXMEM_WriteAddrRegOut	<= x"00000000";
+			EXMEM_WriteAddrRegOut	<= "00000";
 			
 		elsif EXMEM_Stall = '0' then
 			EXMEM_BranchOut			<=	EXMEM_BranchIn;
@@ -223,13 +223,13 @@ Port (CLK					 		:	in STD_LOGIC;
 		MEMWB_MemReadDataIn		:	in STD_LOGIC_VECTOR(31 downto 0);
 		MEMWB_ALUResult1In		:	in STD_LOGIC_VECTOR(31 downto 0);
 		MEMWB_ALUResult2In		:	in STD_LOGIC_VECTOR(31 downto 0);
-		MEMWB_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(31 downto 0);
+		MEMWB_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(4 downto 0);
 		
 		MEMWB_MemtoRegOut			:	out STD_LOGIC;
 		MEMWB_MemReadDataOut		:	out STD_LOGIC_VECTOR(31 downto 0);
 		MEMWB_ALUResult1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 		MEMWB_ALUResult2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
-		MEMWB_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(31 downto 0)
+		MEMWB_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(4 downto 0)
 		);
 end MEM_WB;
 
@@ -243,7 +243,7 @@ begin
 			MEMWB_MemReadDataOut		<= x"00000000";
 			MEMWB_ALUResult1Out		<= x"00000000";
 			MEMWB_ALUResult2Out		<= x"00000000";
-			MEMWB_WriteAddrRegOut	<= x"00000000";
+			MEMWB_WriteAddrRegOut	<= "00000";
 			
 		elsif MEMWB_Stall = '0' then
 			MEMWB_MemtoRegOut			<= MEMWB_MemtoRegIn;
