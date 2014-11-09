@@ -75,6 +75,7 @@ Port (CLK						:	in STD_LOGIC;
 		IDEX_PCPlus4In			:	in STD_LOGIC_VECTOR(31 downto 0);
 		IDEX_ReadData1In		:	in STD_LOGIC_VECTOR(31 downto 0);
 		IDEX_ReadData2In		:	in STD_LOGIC_VECTOR(31 downto 0);
+		IDEX_SignExtendIn		:	in STD_LOGIC;
 		IDEX_SignExtendedIn	:	in STD_LOGIC_VECTOR(31 downto 0);
 		
 		IDEX_BranchOut			:	out STD_LOGIC;
@@ -82,7 +83,7 @@ Port (CLK						:	in STD_LOGIC;
 		IDEX_MemreadOut		:  out STD_LOGIC;
 		IDEX_MemtoRegOut		:	out STD_LOGIC;
 		IDEX_MemwriteOut		:  out STD_LOGIC;
-		IDEX_ALUSrcOut			:	out STD_LOGIC;
+		IDEX_ALUSrcOut			: 	out STD_LOGIC;
 		IDEX_RegDstOut			:	out STD_LOGIC;
 		IDEX_RegRsOut			: 	out STD_LOGIC_VECTOR(4 downto 0);
 		IDEX_RegRtOut			: 	out STD_LOGIC_VECTOR(4 downto 0);
@@ -90,6 +91,7 @@ Port (CLK						:	in STD_LOGIC;
 		IDEX_PCPlus4Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 		IDEX_ReadData1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 		IDEX_ReadData2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
+		IDEX_SignExtendOut	:	out STD_LOGIC;
 		IDEX_SignExtendedOut	:	out STD_LOGIC_VECTOR(31 downto 0)
 		);
 end ID_EX;
@@ -113,6 +115,7 @@ begin
 			IDEX_PCPlus4Out		<= x"00000000";
 			IDEX_ReadData1Out		<= x"00000000";
 			IDEX_ReadData2Out		<= x"00000000";
+			IDEX_SignExtendOut	<= '0';
 			IDEX_SignExtendedOut	<= x"00000000";
 			
 		elsif IDEX_Stall = '0' then
@@ -129,6 +132,7 @@ begin
 			IDEX_PCPlus4Out		<= IDEX_PCPlus4In;
 			IDEX_ReadData1Out		<= IDEX_ReadData1In;
 			IDEX_ReadData2Out		<= IDEX_ReadData2In;
+			IDEX_SignExtendOut	<= IDEX_SignExtendIn;
 			IDEX_SignExtendedOut	<= IDEX_SignExtendedIn;
 		end if;
 	end if;

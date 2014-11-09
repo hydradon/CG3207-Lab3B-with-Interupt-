@@ -163,6 +163,7 @@ component ID_EX is
 			IDEX_PCPlus4In			:	in STD_LOGIC_VECTOR(31 downto 0);
 			IDEX_ReadData1In		:	in STD_LOGIC_VECTOR(31 downto 0);
 			IDEX_ReadData2In		:	in STD_LOGIC_VECTOR(31 downto 0);
+			IDEX_SignExtendIn		:	in STD_LOGIC;
 			IDEX_SignExtendedIn	:	in STD_LOGIC_VECTOR(31 downto 0);
 			
 			IDEX_BranchOut			:	out STD_LOGIC;
@@ -170,7 +171,7 @@ component ID_EX is
 			IDEX_MemreadOut		:  out STD_LOGIC;
 			IDEX_MemtoRegOut		:	out STD_LOGIC;
 			IDEX_MemwriteOut		:  out STD_LOGIC;
-			IDEX_ALUSrcOut			:	out STD_LOGIC;
+			IDEX_ALUSrcOut			: 	out STD_LOGIC;
 			IDEX_RegDstOut			:	out STD_LOGIC;
 			IDEX_RegRsOut			: 	out STD_LOGIC_VECTOR(4 downto 0);
 			IDEX_RegRtOut			: 	out STD_LOGIC_VECTOR(4 downto 0);
@@ -178,6 +179,7 @@ component ID_EX is
 			IDEX_PCPlus4Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 			IDEX_ReadData1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
 			IDEX_ReadData2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
+			IDEX_SignExtendOut	:	out STD_LOGIC;
 			IDEX_SignExtendedOut	:	out STD_LOGIC_VECTOR(31 downto 0)
 			);
 end component;
@@ -332,6 +334,7 @@ end component;
 	signal	IDEX_PCPlus4In			: STD_LOGIC_VECTOR(31 downto 0);
 	signal	IDEX_ReadData1In		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	IDEX_ReadData2In		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	IDEX_SignExtendIn		: STD_LOGIC;
 	signal	IDEX_SignExtendedIn	: STD_LOGIC_VECTOR(31 downto 0);
 		
 	signal	IDEX_BranchOut			: STD_LOGIC;
@@ -347,6 +350,7 @@ end component;
 	signal	IDEX_PCPlus4Out		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	IDEX_ReadData1Out		: STD_LOGIC_VECTOR(31 downto 0);
 	signal	IDEX_ReadData2Out		: STD_LOGIC_VECTOR(31 downto 0);
+	signal	IDEX_SignExtendOut	: STD_LOGIC;
 	signal	IDEX_SignExtendedOut	: STD_LOGIC_VECTOR(31 downto 0);
 
 ----------------------------------------------------------------
@@ -531,6 +535,7 @@ ID_EX1: ID_EX port map
 		IDEX_PCPlus4In			=> IDEX_PCPlus4In,
 		IDEX_ReadData1In		=> IDEX_ReadData1In,
 		IDEX_ReadData2In		=> IDEX_ReadData2In,
+		IDEX_SignExtendIn		=> IDEX_SignExtendIn,
 		IDEX_SignExtendedIn	=> IDEX_SignExtendedIn,
 		
 		IDEX_BranchOut			=> IDEX_BranchOut,
@@ -546,6 +551,7 @@ ID_EX1: ID_EX port map
 		IDEX_PCPlus4Out		=> IDEX_PCPlus4Out,
 		IDEX_ReadData1Out		=> IDEX_ReadData1Out,
 		IDEX_ReadData2Out		=> IDEX_ReadData2Out,
+		IDEX_SignExtendOut	=> IDEX_SignExtendOut
 		IDEX_SignExtendedOut	=> IDEX_SignExtendedOut
 		);
 
@@ -607,84 +613,118 @@ MEM_WB1	:MEM_WB port map
 --<Rest of the logic goes here>
 
 
--- Input for ControlUnit
-opcode <= Instr(31 downto 26);
-
-
 --IF stage----------------------------------------------------------------------------------------------------------------
+PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
+			  PC_out;
 
 -- Output to TOP
 Addr_Instr <= PC_out;
 
 -- Input for PC
-PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
-			  PC_out;
 PC_In <= Readdata1_Reg when ALUOp = "00" and Instr(5 downto 1) = "00100" else -- JR, JALR
 			(PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' else
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else
-			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Result1(0) = '0' else -- bgez
-			PCPlus4;
+			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Result1 = x"00000000" else -- bgez
+			PCPlus4;			
+
+-- Input for IFID
+IFID_PCPlus4In <= PCPlus4;
+IFID_InstrIn <= Instr;
+
 --end IF stage----------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
 
 
 --ID stage----------------------------------------------------------------------------------------------------------------
--- Input for RegFile
-ReadAddr1_Reg <= Instr(25 downto 21);
-ReadAddr2_Reg <= Instr(20 downto 16);
+-- Input for ControlUnit
+opcode <= IFID_InstrOut(31 downto 26);
 
+-- Input for RegFile
+ReadAddr1_Reg <= IFID_InstrOut(25 downto 21);
+ReadAddr2_Reg <= IFID_InstrOut(20 downto 16);
 					  
 -- Input for SignExtender
-SignEx_In <= Instr(15 downto 0);
+SignEx_In <= IFID_InstrOut(15 downto 0);
+
+-- Input for ID/EX
+IDEX_BranchIn <= Branch;
+IDEX_ALUOpIn <= ALUOp;
+IDEX_MemreadIn <= MemRead;
+IDEX_MemtoRegIn <= MemtoReg;
+IDEX_MemwriteIn <= MemWrite;
+IDEX_ALUSrcIn <= ALUSrc;
+IDEX_RegDstIn <= RegDst;
+IDEX_RegRsIn <= IFID_InstrOut(25 downto 21);
+IDEX_RegRtIn <= IFID_InstrOut(20 downto 16);
+IDEX_RegRdIn <= IFID_InstrOut(15 downto 11);
+IDEX_PCPlus4In <= IFID_PcPlus4Out;
+IDEX_ReadData1In <= ReadData1_Reg;
+IDEX_ReadData2In <= ReadData2_Reg;
+IDEX_SignExtendIn <= SignExtend;
+IDEX_SignExtendedIn <= SignEx_Out;
 
 --end ID stage----------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
 
-
-			
 --EX stage----------------------------------------------------------------------------------------------------------------
 -- Input for ALU
-ALU_InA <= ReadData2_Reg when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "000") else
-				ReadData1_Reg;
-ALU_InB <= (x"000000" & "000" & Instr(10 downto 6)) when (Instr(31 downto 26) = "000000" and Instr(5 downto 2) = "0000") else
+ALU_InA <= IDEX_ReadData2Out when (IDEX_ALUOpOut = "00" and 
+											  IDEX_SignExtendedOut(5 downto 3) = "000") else	-- IDEX_SignExtendedOut(5 downto 3) is Instr(5 downto 3)
+			  IDEX_ReadData1Out;
+			  
+ALU_InB <= (x"000000" & "000" & IDEX_SignExtendedOut(10 downto 6)) when (IDEX_ALUOpOut = "00" and 
+																								 IDEX_SignExtendedOut(5 downto 2) = "0000") else
 				x"00000000" when Instr(31 downto 26) = "000001" else  -- BGEZ
-				ReadData1_Reg when (Instr(31 downto 26) = "000000" and Instr(5 downto 2) = "0001") else
-				ReadData2_Reg when ALUSrc = '0' else
-				SignEx_Out when SignExtend = '1' else
-			  (x"0000" & Instr(15 downto 0));  -- for ADDIU, ORI (non sign extend imm)
+				IDEX_ReadData1Out when (IDEX_ALUOpOut = "00" and 
+												IDEX_SignExtendedOut(5 downto 2) = "0001") else
+				IDEX_ReadData2Out when IDEX_ALUSrcOut = '0' else
+				IDEX_SignExtendedOut when IDEX_SignExtendOut = '1' else
+			  (x"0000" & IDEX_SignExtendedOut(15 downto 0));  -- for ADDIU, ORI (non sign extend imm)
 
-
-ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch
-				"00010" when ALUOp = "00" else						-- add when lw, sw, addiu, addi
-				"00001" when ALUOp = "11"	else 						-- or when ori
-				"00000" when Instr(5 downto 0) = "100100" else	-- and
-				"00001" when Instr(5 downto 0) = "100101" else	-- or
-				"01100" when Instr(5 downto 0) = "100111" else	-- nor
-				"00100" when Instr(5 downto 0) = "100110" else	-- xor
-				"00010" when Instr(5 downto 0) = "100000" else	-- add
-				"00110" when Instr(5 downto 0) = "100010" else	-- sub
+ALU_Func <= "00110" when IDEX_ALUOpOut = "01" else						-- add when branch
+				"00010" when IDEX_ALUOpOut = "00" else						-- add when lw, sw, addiu, addi
+				"00001" when IDEX_ALUOpOut = "11" else 					-- or when ori
+				"00000" when IDEX_SignExtnededOut(5 downto 0) = "100100" else	-- and
+				"00001" when IDEX_SignExtendedOut(5 downto 0) = "100101" else	-- or
+				"01100" when IDEX_SignExtendedOut(5 downto 0) = "100111" else	-- nor
+				"00100" when IDEX_SignExtendedOut(5 downto 0) = "100110" else	-- xor
+				"00010" when IDEX_SignExtendedOut(5 downto 0) = "100000" else	-- add
+				"00110" when IDEX_SignExtendedOut(5 downto 0) = "100010" else	-- sub
 				"00111" when (Instr(31 downto 26) = "001010" or 
-				Instr(31 downto 26) = "000001" or 
-				Instr(5 downto 0) = "101010") else -- slti, bgez, slt
-				"01110" when Instr(5 downto 0) = "101011"else	-- sltu
-				"00101" when (Instr(5 downto 0) = "000000" or 
-				Instr(5 downto 0) = "000100") else	-- sll, sllv
-				"01101" when (Instr(5 downto 0) = "000010" or 
-				Instr(5 downto 0) = "000110") else	-- srl, srlv
-				"01001" when (Instr(5 downto 0) = "000011" or 
-				Instr(5 downto 0) = "000111") else	-- sra, srav
-				"10000" when Instr(5 downto 0) = "011000" else	-- mult
-				"10001" when Instr(5 downto 0) = "011001" else	-- multu
-				"10010" when Instr(5 downto 0) = "011010" else	-- div
-				"10011" when Instr(5 downto 0) = "011011" else	-- divu
+								  Instr(31 downto 26) = "000001" or 
+								  IDEX_SignExtendedOut(5 downto 0) = "101010") else -- slti, bgez, slt
+				"01110" when IDEX_SignExtendedOut(5 downto 0) = "101011"else	-- sltu
+				"00101" when (IDEX_SignExtendedOut(5 downto 0) = "000000" or 
+								  IDEX_SignExtendedOut(5 downto 0) = "000100") else	-- sll, sllv
+				"01101" when (IDEX_SignExtendedOut(5 downto 0) = "000010" or 
+								  IDEX_SignExtendedOut(5 downto 0) = "000110") else	-- srl, srlv
+				"01001" when (IDEX_SignExtendedOut(5 downto 0) = "000011" or 
+								  IDEX_SignExtendedOut(5 downto 0) = "000111") else	-- sra, srav
+				"10000" when IDEX_SignExtendedOut(5 downto 0) = "011000" else	-- mult
+				"10001" when IDEX_SignExtendedOut(5 downto 0) = "011001" else	-- multu
+				"10010" when IDEX_SignExtendedOut(5 downto 0) = "011010" else	-- div
+				"10011" when IDEX_SignExtendedOut(5 downto 0) = "011011" else	-- divu
 				"XXXXX";														-- unknown operation
+				
 ALU_Control <= RESET & ALU_Func;	
 
-
 -- Input for RegHiLo
-RegWrite_HiLo <= '1' when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
+RegWrite_HiLo <= '1' when (IDEX_ALUOp = "00" and IDEX_SignExtendedOut(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
 					  '0';
 WriteData_HiLo <= ALU_Result2 & ALU_Result1;
+
+-- Input to EX/MEM
+EXMEM_BranchIn <= IDEX_BranchOut;
+EXMEM_BranchTargetIn <= IDEX_PCPlus4Out + (IDEX_SignExtendOut(29 downto 0) & "00");
+EXMEM_MemreadIn <= IDEX_MemreadOut;
+EXMEM_MemtoRegIn <= IDEX_MemtoRegOut;
+EXMEM_MemwriteIn <= IDEX_MemwriteOut;
+EXMEM_ALUZeroIn <= ALU_Status(0);
+EXMEM_ALUResult1In <= ALU_Result1;
+EXMEM_ALUResult2In <= ALU_Result2;
+EXMEM_WriteDataMemIn <= IDEX_ReadData2Out;	-- Need to modify for MEM forwarding
+EXMEM_WriteAddrRegIn <= IDEX_RegRtOut when IDEX_RegDstOut = '0' else
+								IDEX_RegRdOut;
 
 ---end EX stage---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
@@ -692,8 +732,15 @@ WriteData_HiLo <= ALU_Result2 & ALU_Result1;
 ---MEM stage------------------------------------------------------------------------------------------------------------------
 
 -- Output to TOP
-Addr_Data <= ALU_Result1;
-Data_Out <=	ReadData2_Reg;
+Addr_Data <= EXMEM_ALUResult1Out;
+Data_Out <=	EXMEM_WriteDataMemOut;
+
+-- Input to MEM/WB
+MEMWB_MemtoRegIn <= EXMEM_MemtoRegOut;
+MEMWB_MemReadDataIn <= Data_In;
+MEMWB_ALUResult1In <= EXMEM_ALUResult1Out;
+MEMWB_ALUResult2In <= EXMEM_ALUResult2Out;
+MEMWB_WriteAddrRegIn <= EXMEM_WriteAddrRegOut;
 
 ---end MEM stage---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
@@ -702,8 +749,7 @@ Data_Out <=	ReadData2_Reg;
 WriteAddr_Reg <= "11111" when ((Instr(31 downto 26) = "000001" and 
 						(Instr(20 downto 16) = "10001" or Instr(20 downto 16) = "10000")) or 
 						Instr(31 downto 26) = "000011" or (ALUOp = "00" and Instr(5 downto 0) = "001001")) else	--bgezal or bltzal or jal or jalr
-						Instr(20 downto 16) when RegDst = '0' else
-					  Instr(15 downto 11);
+						MEMWB_WriteAddrRegOut;
 WriteData_Reg <= PC_in + 4 when ((Instr(31 downto 26) = "000001" and 
 						(Instr(20 downto 16) = "10001" or Instr(20 downto 16) = "10000")) or 
 						Instr(31 downto 26) = "000011" or (ALUOp = "00" and Instr(5 downto 0) = "001001")) else	--bgezal or bltzal or jal or jalr
@@ -712,7 +758,7 @@ WriteData_Reg <= PC_in + 4 when ((Instr(31 downto 26) = "000001" and
 					  ReadData_HiLo(63 downto 32) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010000") else
 					  ReadData_HiLo(31 downto 0) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010010") else
 					  CoProcessorOut when (Instr(31 downto 26) = "010000" and Instr(23) = '0') else -- MFC0
-					  ALU_Result1;
+					  MEMWB_ALUResult1Out;
 
 ---end WB stage---------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------------------
