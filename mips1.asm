@@ -12,10 +12,15 @@ loop: 	lui $t3, 0x0004
 delay1: sub $t2, $t2, $t1 
 	slt $t3, $t2, $t1
 	beq $t3, $zero, delay1
-	lui $t3, 0x0004
-	sll $t2, $t3, 0x0006
-	srl $t2, $t2, 0x000A
-	sra $t2, $t2, 0x000C
+	
+	lui $t3, 0xFFFF
+	srav $t3, $t3, $t1
+	lui $t2, 0xFFFF
+	xor $t2, $t2, $t3
+	sllv $t2, $t2, $t1
+	srlv $t2, $t2, $t1
+	srl $t2, $t2, 0x000F
+	addi $t2, $t2, 0x0003
 delay2: sub $t2, $t2, $t1
 	sub $t3, $t1, $t2
 	bgez $t3, delay2

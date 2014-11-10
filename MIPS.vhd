@@ -69,12 +69,13 @@ end component;
 component ControlUnit is
     Port ( 	
 			opcode 		: in   STD_LOGIC_VECTOR (5 downto 0);
-			ALUOp 		: out  STD_LOGIC_VECTOR (1 downto 0);
+			ALUOp 		: out  STD_LOGIC_VECTOR (2 downto 0);
 			Branch 		: out  STD_LOGIC;
 			Jump	 		: out  STD_LOGIC;				
 			MemRead 		: out  STD_LOGIC;	
 			MemtoReg 	: out  STD_LOGIC;	
 			InstrtoReg	: out  STD_LOGIC; -- true for LUI. When true, Instr(15 downto 0)&x"0000" is written to rt
+			PCtoReg		: out  STD_LOGIC;
 			MemWrite		: out  STD_LOGIC;	
 			ALUSrc 		: out  STD_LOGIC;	
 			SignExtend 	: out  STD_LOGIC; -- false for ORI 
@@ -109,18 +110,6 @@ component RegHiLo is
 end component;
 
 ----------------------------------------------------------------
--- CoProcessor0
-----------------------------------------------------------------
-component CoProcessor0 is
-     Port ( Addr_Read        : in  STD_LOGIC_VECTOR(4 downto 0);
-				CoProcessorIn    : in  STD_LOGIC_VECTOR(31 downto 0);
-				Addr_Write       : in  STD_LOGIC_VECTOR(4 downto 0);
-				CoProcessorOut   : out STD_LOGIC_VECTOR(31 downto 0);
-				CoProcessorWrite : in  STD_LOGIC;
-				CLK              : in  STD_LOGIC);
-end component;
-
-----------------------------------------------------------------
 -- SignExtender
 ----------------------------------------------------------------
 component SignExtender is
@@ -148,11 +137,12 @@ end component;
 -- Control Unit Signals
 ----------------------------------------------------------------				
  	signal	opcode 		:  STD_LOGIC_VECTOR (5 downto 0);
-	signal	ALUOp 		:  STD_LOGIC_VECTOR (1 downto 0);
+	signal	ALUOp 		:  STD_LOGIC_VECTOR (2 downto 0);
 	signal	Branch 		:  STD_LOGIC;
 	signal	Jump	 		:  STD_LOGIC;	
 	signal	MemtoReg 	:  STD_LOGIC;
-	signal 	InstrtoReg	: 	STD_LOGIC;		
+	signal 	InstrtoReg	: 	STD_LOGIC;	
+	signal	PCtoReg		:  STD_LOGIC;
 	signal	ALUSrc 		:  STD_LOGIC;	
 	signal	SignExtend 	: 	STD_LOGIC;
 	signal	RegWrite		: 	STD_LOGIC;
@@ -175,15 +165,6 @@ end component;
    signal  ReadData_HiLo  : STD_LOGIC_VECTOR (63 downto 0);
 	signal  RegWrite_HiLo  : STD_LOGIC;
 	
-----------------------------------------------------------------
--- CoProcessor0 signals
-----------------------------------------------------------------								
-   signal  Addr_Read        : STD_LOGIC_VECTOR(4 downto 0);
-	signal  CoProcessorIn    : STD_LOGIC_VECTOR(31 downto 0);
-	signal  Addr_Write       : STD_LOGIC_VECTOR(4 downto 0);
-   signal  CoProcessorOut   : STD_LOGIC_VECTOR(31 downto 0);
-	signal  CoProcessorWrite : STD_LOGIC;
-
 ----------------------------------------------------------------
 -- SignExtend Signals
 ----------------------------------------------------------------
@@ -243,6 +224,7 @@ ControlUnit1 	: ControlUnit port map
 						MemRead 		=> MemRead, 
 						MemtoReg 	=> MemtoReg, 
 						InstrtoReg 	=> InstrtoReg, 
+						PCtoReg		=> PCtoReg,
 						MemWrite 	=> MemWrite, 
 						ALUSrc 		=> ALUSrc, 
 						SignExtend 	=> SignExtend, 
@@ -277,20 +259,6 @@ RegHiLo1		:   RegHiLo port map
 					 );
 					 
 ----------------------------------------------------------------
--- CoProcessor port map
-----------------------------------------------------------------
-CoProcessor01		:   CoProcessor0 port map
-						(
-						Addr_Read        => Addr_Read,
-						CoProcessorIn    => CoProcessorIn,
-						Addr_Write       => Addr_Write,
-						CoProcessorOut   => CoProcessorOut,
-						CoProcessorWrite => CoProcessorWrite,
-						CLK              => CLK
-						);
-
-
-----------------------------------------------------------------
 -- SignExtender port map
 ----------------------------------------------------------------
 SignExtender1		:SignExtender port map
@@ -311,35 +279,32 @@ Data_Out <=	ReadData2_Reg;
 -- Input for PC
 PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
 			  PC_out;
-PC_In <= Readdata1_Reg when ALUOp = "00" and Instr(5 downto 1) = "00100" else -- JR, JALR
+PC_In <= Readdata1_Reg when ALUOp = "010" and Instr(5 downto 1) = "00100" else -- JR, JALR
 			(PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' else
-			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else
-			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Result1 = x"00000000"			else -- bgez
+			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else	-- beq, bgez
 			PCPlus4;
 
 -- Input for ALU
-ALU_InA <= ReadData2_Reg when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "000") else
+ALU_InA <= ReadData2_Reg when (ALUOp = "010" and Instr(5 downto 3) = "000") else
 				ReadData1_Reg;
-ALU_InB <= (x"000000" & "000" & Instr(10 downto 6)) when (Instr(31 downto 26) = "000000" and Instr(5 downto 2) = "0000") else
-				x"00000000" when Instr(31 downto 26) = "000001" else  -- BGEZ
-				ReadData1_Reg when (Instr(31 downto 26) = "000000" and Instr(5 downto 2) = "0001") else
+ALU_InB <= (x"000000" & "000" & Instr(10 downto 6)) when (ALUOp = "010" and Instr(5 downto 2) = "0000") else
+				x"00000000" when ALUOp = "101" and Branch = '1' else  -- BGEZ
+				ReadData1_Reg when (ALUOp = "010" and Instr(5 downto 2) = "0001") else
 				ReadData2_Reg when ALUSrc = '0' else
 				SignEx_Out when SignExtend = '1' else
 			  (x"0000" & Instr(15 downto 0));  -- for ADDIU, ORI (non sign extend imm)
 
-
-ALU_Func <= "00110" when ALUOp = "01" else						-- add when branch
-				"00010" when ALUOp = "00" else						-- add when lw, sw, addiu, addi
-				"00001" when ALUOp = "11"	else 						-- or when ori
+ALU_Func <= "00110" when ALUOp = "001" else						-- add when branch
+				"00010" when ALUOp = "000" else						-- add when lw, sw, addiu, addi
+				"00001" when ALUOp = "011"	else 						-- or when ori
+				"00111" when ALUOp = "101" else						-- slt when bgez, slti
 				"00000" when Instr(5 downto 0) = "100100" else	-- and
 				"00001" when Instr(5 downto 0) = "100101" else	-- or
 				"01100" when Instr(5 downto 0) = "100111" else	-- nor
 				"00100" when Instr(5 downto 0) = "100110" else	-- xor
 				"00010" when Instr(5 downto 0) = "100000" else	-- add
 				"00110" when Instr(5 downto 0) = "100010" else	-- sub
-				"00111" when (Instr(31 downto 26) = "001010" or -- slti
-								Instr(31 downto 26) = "000001" or 	-- bgez
-								Instr(5 downto 0) = "101010") else 	-- slt
+				"00111" when Instr(5 downto 0) = "101010" else 	-- slt
 				"01110" when Instr(5 downto 0) = "101011"else	-- sltu
 				"00101" when (Instr(5 downto 0) = "000000" or 
 								  Instr(5 downto 0) = "000100") else	-- sll, sllv
@@ -361,35 +326,25 @@ opcode <= Instr(31 downto 26);
 -- Input for RegFile
 ReadAddr1_Reg <= Instr(25 downto 21);
 ReadAddr2_Reg <= Instr(20 downto 16);
-WriteAddr_Reg <= "11111" when ((Instr(31 downto 26) = "000001" and 
-						(Instr(20 downto 16) = "10001" or Instr(20 downto 16) = "10000")) or 
-						Instr(31 downto 26) = "000011" or (ALUOp = "00" and Instr(5 downto 0) = "001001")) else	--bgezal or bltzal or jal or jalr
+WriteAddr_Reg <= "11111" when PCtoReg = '1' or 
+										(ALUOp = "010" and Instr(5 downto 0) = "001001") else
 						Instr(20 downto 16) when RegDst = '0' else
 					  Instr(15 downto 11);
-WriteData_Reg <= PC_in + 4 when ((Instr(31 downto 26) = "000001" and 
-						(Instr(20 downto 16) = "10001" or Instr(20 downto 16) = "10000")) or 
-						Instr(31 downto 26) = "000011" or (ALUOp = "00" and Instr(5 downto 0) = "001001")) else	--bgezal or bltzal or jal or jalr
+WriteData_Reg <= PC_in + 4 when PCtoReg = '1' or 
+										  (ALUOp = "010" and Instr(5 downto 0) = "001001") else
 						Data_in when MemtoReg = '1' else
 					  (Instr(15 downto 0) & x"0000") when InstrtoReg = '1' else
-					  ReadData_HiLo(63 downto 32) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010000") else
-					  ReadData_HiLo(31 downto 0) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010010") else
-					  CoProcessorOut when (Instr(31 downto 26) = "010000" and Instr(23) = '0') else -- MFC0
+					  ReadData_HiLo(63 downto 32) when (ALUOp = "010" and Instr(5 downto 0) = "010000") else
+					  ReadData_HiLo(31 downto 0) when (ALUOp = "010" and Instr(5 downto 0) = "010010") else
 					  ALU_Result1;
 					  
 -- Input for RegHiLo
-RegWrite_HiLo <= '1' when (Instr(31 downto 26) = "000000" and Instr(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
+RegWrite_HiLo <= '1' when (ALUOp = "010" and Instr(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
 					  '0';
 WriteData_HiLo <= ALU_Result2 & ALU_Result1;
 
 -- Input for SignExtender
 SignEx_In <= Instr(15 downto 0);
-
--- Input for CoProcessor0
-Addr_Read <= Instr(15 downto 11);
-Addr_Write <= Instr(15 downto 11);
-CoProcessorIn <= ReadData2_Reg;
-CoProcessorWrite <= '1' when (Instr(31 downto 26) = "010000" and Instr(23) = '1') else -- MTC0
-						  '0';
 
 end arch_MIPS;
 
