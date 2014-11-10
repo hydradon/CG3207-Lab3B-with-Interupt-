@@ -110,135 +110,11 @@ component RegHiLo is
 end component;
 
 ----------------------------------------------------------------
--- CoProcessor0
-----------------------------------------------------------------
---component CoProcessor0 is
---     Port ( CoProAddr_Read   : in  STD_LOGIC_VECTOR(4 downto 0);
---				CoProcessorIn    : in  STD_LOGIC_VECTOR(31 downto 0);
---				CoProAddr_Write  : in  STD_LOGIC_VECTOR(4 downto 0);
---				CoProcessorOut   : out STD_LOGIC_VECTOR(31 downto 0);
---				CoProcessorWrite : in  STD_LOGIC;
---				CLK              : in  STD_LOGIC);
---end component;
-
-----------------------------------------------------------------
 -- SignExtender
 ----------------------------------------------------------------
 component SignExtender is
     Port ( Input  : in  STD_LOGIC_VECTOR (15 downto 0);
            Output : out  STD_LOGIC_VECTOR (31 downto 0));
-end component;
-
-----------------------------------------------------------------
--- IF_ID
-----------------------------------------------------------------
-component IF_ID is
-	Port (CLK					: 	in STD_LOGIC;
-			IFID_Flush			: 	in STD_LOGIC;
-			IFID_Stall			: 	in STD_LOGIC;
-			IFID_PCPlus4In		:	in STD_LOGIC_VECTOR(31 downto 0);
-			IFID_InstrIn		:	in STD_LOGIC_VECTOR(31 downto 0);
-
-			IFID_PCPlus4Out	:	out STD_LOGIC_VECTOR(31 downto 0);
-			IFID_InstrOut		: 	out STD_LOGIC_VECTOR(31 downto 0)
-			);
-end component;
-
-----------------------------------------------------------------
--- ID_EX
-----------------------------------------------------------------
-component ID_EX is
-	Port (CLK						:	in STD_LOGIC;
-			IDEX_Flush				:	in STD_LOGIC;
-			IDEX_Stall				:	in STD_LOGIC;
-			IDEX_BranchIn			:	in STD_LOGIC;
-			IDEX_ALUOpIn			:  in STD_LOGIC_VECTOR(2 downto 0);
-			IDEX_InstrtoRegIn		:	in STD_LOGIC;
-			IDEX_PCtoRegIn			:	in STD_LOGIC;
-			IDEX_MemreadIn			:  in STD_LOGIC;
-			IDEX_MemtoRegIn		:	in STD_LOGIC;
-			IDEX_MemwriteIn		:  in STD_LOGIC;
-			IDEX_ALUSrcIn			:	in STD_LOGIC;
-			IDEX_RegDstIn			:	in STD_LOGIC;
-			IDEX_RegRsIn			: 	in STD_LOGIC_VECTOR(4 downto 0);
-			IDEX_RegRtIn			: 	in STD_LOGIC_VECTOR(4 downto 0);
-			IDEX_RegRdIn			: 	in STD_LOGIC_VECTOR(4 downto 0);
-			IDEX_PCPlus4In			:	in STD_LOGIC_VECTOR(31 downto 0);
-			IDEX_ReadData1In		:	in STD_LOGIC_VECTOR(31 downto 0);
-			IDEX_ReadData2In		:	in STD_LOGIC_VECTOR(31 downto 0);
-			IDEX_SignExtendIn		:	in STD_LOGIC;
-			IDEX_SignExtendedIn	:	in STD_LOGIC_VECTOR(31 downto 0);
-			
-			IDEX_BranchOut			:	out STD_LOGIC;
-			IDEX_ALUOpOut			:  out STD_LOGIC_VECTOR(2 downto 0);
-			IDEX_InstrtoRegOut	:	out STD_LOGIC;
-			IDEX_PCtoRegOut		:	out STD_LOGIC;
-			IDEX_MemreadOut		:  out STD_LOGIC;
-			IDEX_MemtoRegOut		:	out STD_LOGIC;
-			IDEX_MemwriteOut		:  out STD_LOGIC;
-			IDEX_ALUSrcOut			: 	out STD_LOGIC;
-			IDEX_RegDstOut			:	out STD_LOGIC;
-			IDEX_RegRsOut			: 	out STD_LOGIC_VECTOR(4 downto 0);
-			IDEX_RegRtOut			: 	out STD_LOGIC_VECTOR(4 downto 0);
-			IDEX_RegRdOut			: 	out STD_LOGIC_VECTOR(4 downto 0);
-			IDEX_PCPlus4Out		:	out STD_LOGIC_VECTOR(31 downto 0);
-			IDEX_ReadData1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
-			IDEX_ReadData2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
-			IDEX_SignExtendOut	:	out STD_LOGIC;
-			IDEX_SignExtendedOut	:	out STD_LOGIC_VECTOR(31 downto 0)
-			);
-end component;
-
-----------------------------------------------------------------
--- EX_MEM
-----------------------------------------------------------------
-component EX_MEM is
-	Port (CLK							:	in STD_LOGIC;
-			EXMEM_Flush					:	in STD_LOGIC;
-			EXMEM_Stall					:	in STD_LOGIC;
-			EXMEM_BranchIn				:	in STD_LOGIC;
-			EXMEM_BranchTargetIn		:	in STD_LOGIC_VECTOR(31 downto 0);
-			EXMEM_MemreadIn			:	in STD_LOGIC;
-			EXMEM_MemtoRegIn			:	in STD_LOGIC;
-			EXMEM_MemwriteIn			:	in STD_LOGIC;
-			EXMEM_ALUZeroIn			:	in STD_LOGIC;
-			EXMEM_ALUResult1In		:	in STD_LOGIC_VECTOR(31 downto 0);
-			EXMEM_ALUResult2In		:  in STD_LOGIC_VECTOR(31 downto 0);
-			EXMEM_WriteDataMemIn		:	in STD_LOGIC_VECTOR(31 downto 0);
-			EXMEM_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(4 downto 0);
-
-			EXMEM_BranchOut			:	out STD_LOGIC;
-			EXMEM_BranchTargetOut	:	out STD_LOGIC_VECTOR(31 downto 0);
-			EXMEM_MemreadOut			:	out STD_LOGIC;
-			EXMEM_MemtoRegOut			:	out STD_LOGIC;
-			EXMEM_MemwriteOut			:	out STD_LOGIC;
-			EXMEM_ALUZeroOut			:	out STD_LOGIC;
-			EXMEM_ALUResult1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
-			EXMEM_ALUResult2Out		:  out STD_LOGIC_VECTOR(31 downto 0);
-			EXMEM_WriteDataMemOut	:	out STD_LOGIC_VECTOR(31 downto 0);
-			EXMEM_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(4 downto 0)
-			);
-end component;
-
-----------------------------------------------------------------
--- MEM_WB
-----------------------------------------------------------------
-component MEM_WB is
-	Port (CLK					 		:	in STD_LOGIC;
-			MEMWB_Flush					:	in STD_LOGIC;
-			MEMWB_Stall					:	in STD_LOGIC;
-			MEMWB_MemtoRegIn			:	in STD_LOGIC;
-			MEMWB_MemReadDataIn		:	in STD_LOGIC_VECTOR(31 downto 0);
-			MEMWB_ALUResult1In		:	in STD_LOGIC_VECTOR(31 downto 0);
-			MEMWB_ALUResult2In		:	in STD_LOGIC_VECTOR(31 downto 0);
-			MEMWB_WriteAddrRegIn		:	in STD_LOGIC_VECTOR(4 downto 0);
-			
-			MEMWB_MemtoRegOut			:	out STD_LOGIC;
-			MEMWB_MemReadDataOut		:	out STD_LOGIC_VECTOR(31 downto 0);
-			MEMWB_ALUResult1Out		:	out STD_LOGIC_VECTOR(31 downto 0);
-			MEMWB_ALUResult2Out		:	out STD_LOGIC_VECTOR(31 downto 0);
-			MEMWB_WriteAddrRegOut	:	out STD_LOGIC_VECTOR(4 downto 0)
-			);
 end component;
 
 ----------------------------------------------------------------
@@ -263,12 +139,10 @@ end component;
  	signal	opcode 		:  STD_LOGIC_VECTOR (5 downto 0);
 	signal	ALUOp 		:  STD_LOGIC_VECTOR (2 downto 0);
 	signal	Branch 		:  STD_LOGIC;
-	signal	Jump	 		:  STD_LOGIC;
-	signal	CUMemread	:	STD_LOGIC;
-	signal	CUMemwrite	:	STD_LOGIC;
+	signal	Jump	 		:  STD_LOGIC;	
 	signal	MemtoReg 	:  STD_LOGIC;
 	signal 	InstrtoReg	: 	STD_LOGIC;	
-	signal 	PCtoReg		:	STD_LOGIC;
+	signal	PCtoReg		:  STD_LOGIC;
 	signal	ALUSrc 		:  STD_LOGIC;	
 	signal	SignExtend 	: 	STD_LOGIC;
 	signal	RegWrite		: 	STD_LOGIC;
@@ -292,15 +166,6 @@ end component;
 	signal  RegWrite_HiLo  : STD_LOGIC;
 	
 ----------------------------------------------------------------
--- CoProcessor0 Signals
-----------------------------------------------------------------								
---   signal  CoProAddr_Read   : STD_LOGIC_VECTOR(4 downto 0);
---	signal  CoProcessorIn    : STD_LOGIC_VECTOR(31 downto 0);
---	signal  CoProAddr_Write  : STD_LOGIC_VECTOR(4 downto 0);
---   signal  CoProcessorOut   : STD_LOGIC_VECTOR(31 downto 0);
---	signal  CoProcessorWrite : STD_LOGIC;
-
-----------------------------------------------------------------
 -- SignExtend Signals
 ----------------------------------------------------------------
  	signal	SignEx_In 	:  STD_LOGIC_VECTOR (15 downto 0);
@@ -312,102 +177,6 @@ end component;
 	--<any other signals used goes here>
 	signal PCPlus4 	: STD_LOGIC_VECTOR (31 downto 0) := x"00400000";
 	signal ALU_func	: STD_LOGIC_VECTOR (4 downto 0);
-	
-----------------------------------------------------------------
--- IF_ID Signals
-----------------------------------------------------------------
-	signal	IFID_Flush			: 	STD_LOGIC;
-	signal	IFID_Stall			: 	STD_LOGIC;
-	signal	IFID_PCPlus4In		:	STD_LOGIC_VECTOR(31 downto 0);
-	signal	IFID_InstrIn		:	STD_LOGIC_VECTOR(31 downto 0);
-		
-	signal	IFID_PCPlus4Out	:	STD_LOGIC_VECTOR(31 downto 0);
-	signal	IFID_InstrOut		:  STD_LOGIC_VECTOR(31 downto 0);
-	
-----------------------------------------------------------------
--- ID_EX Signals
-----------------------------------------------------------------
-	signal	IDEX_Flush				: STD_LOGIC;
-	signal	IDEX_Stall				: STD_LOGIC;
-	signal	IDEX_BranchIn			: STD_LOGIC;
-	signal	IDEX_ALUOpIn			: STD_LOGIC_VECTOR(2 downto 0);
-	signal	IDEX_InstrtoRegIn		: STD_LOGIC;
-	signal	IDEX_PCtoRegIn			: STD_LOGIC;
-	signal	IDEX_MemreadIn			: STD_LOGIC;
-	signal	IDEX_MemtoRegIn		: STD_LOGIC;
-	signal	IDEX_MemwriteIn		: STD_LOGIC;
-	signal	IDEX_ALUSrcIn			: STD_LOGIC;
-	signal	IDEX_RegDstIn			: STD_LOGIC;
-	signal	IDEX_RegRsIn			: STD_LOGIC_VECTOR(4 downto 0);
-	signal	IDEX_RegRtIn			: STD_LOGIC_VECTOR(4 downto 0);
-	signal	IDEX_RegRdIn			: STD_LOGIC_VECTOR(4 downto 0);
-	signal	IDEX_PCPlus4In			: STD_LOGIC_VECTOR(31 downto 0);
-	signal	IDEX_ReadData1In		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	IDEX_ReadData2In		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	IDEX_SignExtendIn		: STD_LOGIC;
-	signal	IDEX_SignExtendedIn	: STD_LOGIC_VECTOR(31 downto 0);
-		
-	signal	IDEX_BranchOut			: STD_LOGIC;
-	signal	IDEX_ALUOpOut			: STD_LOGIC_VECTOR(2 downto 0);
-	signal	IDEX_InstrtoRegOut	: STD_LOGIC;
-	signal	IDEX_PCtoRegOut		: STD_LOGIC;
-	signal	IDEX_MemreadOut		: STD_LOGIC;
-	signal	IDEX_MemtoRegOut		: STD_LOGIC;
-	signal	IDEX_MemwriteOut		: STD_LOGIC;
-	signal	IDEX_ALUSrcOut			: STD_LOGIC;
-	signal	IDEX_RegDstOut			: STD_LOGIC;
-	signal 	IDEX_RegRsOut			: STD_LOGIC_VECTOR(4 downto 0);
-	signal 	IDEX_RegRtOut			: STD_LOGIC_VECTOR(4 downto 0);
-	signal 	IDEX_RegRdOut			: STD_LOGIC_VECTOR(4 downto 0);
-	signal	IDEX_PCPlus4Out		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	IDEX_ReadData1Out		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	IDEX_ReadData2Out		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	IDEX_SignExtendOut	: STD_LOGIC;
-	signal	IDEX_SignExtendedOut	: STD_LOGIC_VECTOR(31 downto 0);
-
-----------------------------------------------------------------
--- EX_MEM Signals
-----------------------------------------------------------------
-	signal	EXMEM_Flush					: STD_LOGIC;
-	signal	EXMEM_Stall					: STD_LOGIC;
-	signal	EXMEM_BranchIn				: STD_LOGIC;
-	signal	EXMEM_BranchTargetIn		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	EXMEM_MemreadIn			: STD_LOGIC;
-	signal	EXMEM_MemtoRegIn			: STD_LOGIC;
-	signal	EXMEM_MemwriteIn			: STD_LOGIC;
-	signal	EXMEM_ALUZeroIn			: STD_LOGIC;
-	signal	EXMEM_ALUResult1In		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	EXMEM_ALUResult2In		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	EXMEM_WriteDataMemIn		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	EXMEM_WriteAddrRegIn		: STD_LOGIC_VECTOR(4 downto 0);
-
-	signal	EXMEM_BranchOut			: STD_LOGIC;
-	signal	EXMEM_BranchTargetOut	: STD_LOGIC_VECTOR(31 downto 0);
-	signal	EXMEM_MemreadOut			: STD_LOGIC;
-	signal	EXMEM_MemtoRegOut			: STD_LOGIC;
-	signal	EXMEM_MemwriteOut			: STD_LOGIC;
-	signal	EXMEM_ALUZeroOut			: STD_LOGIC;
-	signal	EXMEM_ALUResult1Out		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	EXMEM_ALUResult2Out		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	EXMEM_WriteDataMemOut	: STD_LOGIC_VECTOR(31 downto 0);
-	signal	EXMEM_WriteAddrRegOut	: STD_LOGIC_VECTOR(4 downto 0);
-	
-----------------------------------------------------------------
--- MEM_WB Signals
-----------------------------------------------------------------
-	signal	MEMWB_Flush					: STD_LOGIC;
-	signal	MEMWB_Stall					: STD_LOGIC;
-	signal	MEMWB_MemtoRegIn			: STD_LOGIC;
-	signal	MEMWB_MemReadDataIn		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	MEMWB_ALUResult1In		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	MEMWB_ALUResult2In		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	MEMWB_WriteAddrRegIn		: STD_LOGIC_VECTOR(4 downto 0);
-	
-	signal	MEMWB_MemtoRegOut			: STD_LOGIC;
-	signal	MEMWB_MemReadDataOut		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	MEMWB_ALUResult1Out		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	MEMWB_ALUResult2Out		: STD_LOGIC_VECTOR(31 downto 0);
-	signal	MEMWB_WriteAddrRegOut	: STD_LOGIC_VECTOR(4 downto 0);
 
 ----------------------------------------------------------------	
 ----------------------------------------------------------------
@@ -452,11 +221,11 @@ ControlUnit1 	: ControlUnit port map
 						ALUOp 		=> ALUOp, 
 						Branch 		=> Branch, 
 						Jump 			=> Jump, 
-						MemRead 		=> CUMemRead, 
+						MemRead 		=> MemRead, 
 						MemtoReg 	=> MemtoReg, 
 						InstrtoReg 	=> InstrtoReg, 
 						PCtoReg		=> PCtoReg,
-						MemWrite 	=> CUMemWrite, 
+						MemWrite 	=> MemWrite, 
 						ALUSrc 		=> ALUSrc, 
 						SignExtend 	=> SignExtend, 
 						RegWrite 	=> RegWrite,
@@ -490,20 +259,6 @@ RegHiLo1		:   RegHiLo port map
 					 );
 					 
 ----------------------------------------------------------------
--- CoProcessor port map
-----------------------------------------------------------------
---CoProcessor01		:   CoProcessor0 port map
---						(
---						CoProAddr_Read   => CoProAddr_Read,
---						CoProcessorIn    => CoProcessorIn,
---						CoProAddr_Write  => CoProAddr_Write,
---						CoProcessorOut   => CoProcessorOut,
---						CoProcessorWrite => CoProcessorWrite,
---						CLK              => CLK
---						);
---
-
-----------------------------------------------------------------
 -- SignExtender port map
 ----------------------------------------------------------------
 SignExtender1		:SignExtender port map
@@ -511,281 +266,85 @@ SignExtender1		:SignExtender port map
 						Input => SignEx_In,
 						Output => SignEx_Out
 						);
-						
-----------------------------------------------------------------
--- IF_ID port map
-----------------------------------------------------------------
-IF_ID1	: IF_ID port map
-			(
-			CLK					=> CLK,
-			IFID_Flush			=> IFID_Flush,
-			IFID_Stall			=> IFID_Stall,
-			IFID_PCPlus4In		=> IFID_PCPlus4In,
-			IFID_InstrIn		=> IFID_InstrIn,
-		
-			IFID_PCPlus4Out	=> IFID_PCPlus4Out,
-			IFID_InstrOut		=> IFID_InstrOut
-			);
-
-----------------------------------------------------------------
--- ID_EX port map
-----------------------------------------------------------------
-ID_EX1: ID_EX port map
-		(
-		CLK						=>	CLK,
-		IDEX_Flush				=> IDEX_Flush,
-		IDEX_Stall				=> IDEX_Stall,
-		IDEX_BranchIn			=> IDEX_BranchIn,
-		IDEX_ALUOpIn			=> IDEX_ALUOpIn,
-		IDEX_InstrtoRegIn		=> IDEX_InstrtoRegIn,
-		IDEX_PCtoRegIn			=> IDEX_PCtoRegIn,
-		IDEX_MemreadIn			=> IDEX_MemreadIn,
-		IDEX_MemtoRegIn		=> IDEX_MemtoRegIn,
-		IDEX_MemwriteIn		=> IDEX_MemwriteIn,
-		IDEX_ALUSrcIn			=> IDEX_ALUSrcIn,
-		IDEX_RegDstIn			=> IDEX_RegDstIn,
-		IDEX_RegRsIn			=> IDEX_RegRsIn,
-		IDEX_RegRtIn			=>	IDEX_RegRtIn,
-		IDEX_RegRdIn			=>	IDEX_RegRdIn,
-		IDEX_PCPlus4In			=> IDEX_PCPlus4In,
-		IDEX_ReadData1In		=> IDEX_ReadData1In,
-		IDEX_ReadData2In		=> IDEX_ReadData2In,
-		IDEX_SignExtendIn		=> IDEX_SignExtendIn,
-		IDEX_SignExtendedIn	=> IDEX_SignExtendedIn,
-		
-		IDEX_BranchOut			=> IDEX_BranchOut,
-		IDEX_ALUOpOut			=> IDEX_ALUOpOut,
-		IDEX_InstrtoRegOut	=> IDEX_InstrtoRegOut,
-		IDEX_PCtoRegOut		=> IDEX_PCtoRegOut,
-		IDEX_MemreadOut		=> IDEX_MemreadOut,
-		IDEX_MemtoRegOut		=> IDEX_MemtoRegOut,
-		IDEX_MemwriteOut		=> IDEX_MemwriteOut,
-		IDEX_ALUSrcOut			=> IDEX_ALUSrcOut,
-		IDEX_RegDstOut			=> IDEX_RegDstOut,
-		IDEX_RegRsOut			=> IDEX_RegRsOut,
-		IDEX_RegRtOut			=>	IDEX_RegRtOut,
-		IDEX_RegRdOut			=>	IDEX_RegRdOut,
-		IDEX_PCPlus4Out		=> IDEX_PCPlus4Out,
-		IDEX_ReadData1Out		=> IDEX_ReadData1Out,
-		IDEX_ReadData2Out		=> IDEX_ReadData2Out,
-		IDEX_SignExtendOut	=> IDEX_SignExtendOut,
-		IDEX_SignExtendedOut	=> IDEX_SignExtendedOut
-		);
-
-----------------------------------------------------------------
--- EX_MEM port map
-----------------------------------------------------------------
-EX_MEM1	:EX_MEM port map
-		(
-		CLK							=>	CLK,
-		EXMEM_Flush					=>	EXMEM_Flush,
-		EXMEM_Stall					=>	EXMEM_Stall,
-		EXMEM_BranchIn				=>	EXMEM_BranchIn,
-		EXMEM_BranchTargetIn		=>	EXMEM_BranchTargetIn,
-		EXMEM_MemreadIn			=>	EXMEM_MemreadIn,
-		EXMEM_MemtoRegIn			=>	EXMEM_MemtoRegIn,
-		EXMEM_MemwriteIn			=>	EXMEM_MemwriteIn,
-		EXMEM_ALUZeroIn			=>	EXMEM_ALUZeroIn,
-		EXMEM_ALUResult1In		=>	EXMEM_ALUResult1In,
-		EXMEM_ALUResult2In		=> EXMEM_ALUResult2In,
-		EXMEM_WriteDataMemIn		=>	EXMEM_WriteDataMemIn,
-		EXMEM_WriteAddrRegIn		=>	EXMEM_WriteAddrRegIn,
-
-		EXMEM_BranchOut			=>	EXMEM_BranchOut,
-		EXMEM_BranchTargetOut	=>	EXMEM_BranchTargetOut,
-		EXMEM_MemreadOut			=>	EXMEM_MemreadOut,
-		EXMEM_MemtoRegOut			=>	EXMEM_MemtoRegOut,	
-		EXMEM_MemwriteOut			=>	EXMEM_MemwriteOut,
-		EXMEM_ALUZeroOut			=>	EXMEM_ALUZeroOut,
-		EXMEM_ALUResult1Out		=>	EXMEM_ALUResult1Out,
-		EXMEM_ALUResult2Out		=> EXMEM_ALUResult2Out,
-		EXMEM_WriteDataMemOut	=>	EXMEM_WriteDataMemOut,
-		EXMEM_WriteAddrRegOut	=>	EXMEM_WriteAddrRegOut
-		);
-		
-----------------------------------------------------------------
--- MEM_WB port map
-----------------------------------------------------------------
-MEM_WB1	:MEM_WB port map
-		(
-		CLK					 		=>	CLK,
-		MEMWB_Flush					=>	MEMWB_Flush,
-		MEMWB_Stall					=>	MEMWB_Stall,
-		MEMWB_MemtoRegIn			=>	MEMWB_MemtoRegIn,
-		MEMWB_MemReadDataIn		=>	MEMWB_MemReadDataIn,
-		MEMWB_ALUResult1In		=>	MEMWB_ALUResult1In,
-		MEMWB_ALUResult2In		=>	MEMWB_ALUResult2In,
-		MEMWB_WriteAddrRegIn		=>	MEMWB_WriteAddrRegIn,
-		
-		MEMWB_MemtoRegOut			=> MEMWB_MemtoRegOut,
-		MEMWB_MemReadDataOut		=>	MEMWB_MemReadDataOut,
-		MEMWB_ALUResult1Out		=> MEMWB_ALUResult1Out,
-		MEMWB_ALUResult2Out		=>	MEMWB_ALUResult2Out,
-		MEMWB_WriteAddrRegOut	=>	MEMWB_WriteAddrRegOut
-		);
-		
 ----------------------------------------------------------------
 -- Processor logic
 ----------------------------------------------------------------
 --<Rest of the logic goes here>
 
---IF stage----------------------------------------------------------------------------------------------------------------
-PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
-			  PC_out;
-
 -- Output to TOP
 Addr_Instr <= PC_out;
+Addr_Data <= ALU_Result1;
+Data_Out <=	ReadData2_Reg;
 
 -- Input for PC
+PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
+			  PC_out;
 PC_In <= Readdata1_Reg when ALUOp = "010" and Instr(5 downto 1) = "00100" else -- JR, JALR
 			(PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' else
-			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else -- beq, bgez
-			PCPlus4;			
+			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else	-- beq, bgez
+			PCPlus4;
 
--- Input for IFID
-IFID_PCPlus4In <= PCPlus4;
-IFID_InstrIn <= Instr;
-
---end IF stage----------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------
-
-
---ID stage----------------------------------------------------------------------------------------------------------------
--- Input for ControlUnit
-opcode <= IFID_InstrOut(31 downto 26);
-
--- Input for RegFile
-ReadAddr1_Reg <= IFID_InstrOut(25 downto 21);
-ReadAddr2_Reg <= IFID_InstrOut(20 downto 16);
-					  
--- Input for SignExtender
-SignEx_In <= IFID_InstrOut(15 downto 0);
-
--- Input for ID/EX
-IDEX_BranchIn <= Branch;
-IDEX_ALUOpIn <= ALUOp;
-IDEX_InstrToRegIn <= InstrtoReg;
-IDEX_PCtoRegIn <= PCtoReg;
-IDEX_MemreadIn <= CUMemRead;
-IDEX_MemtoRegIn <= MemtoReg;
-IDEX_MemwriteIn <= CUMemWrite;
-IDEX_ALUSrcIn <= ALUSrc;
-IDEX_RegDstIn <= RegDst;
-IDEX_RegRsIn <= IFID_InstrOut(25 downto 21);
-IDEX_RegRtIn <= IFID_InstrOut(20 downto 16);
-IDEX_RegRdIn <= IFID_InstrOut(15 downto 11);
-IDEX_PCPlus4In <= IFID_PcPlus4Out;
-IDEX_ReadData1In <= ReadData1_Reg;
-IDEX_ReadData2In <= ReadData2_Reg;
-IDEX_SignExtendIn <= SignExtend;
-IDEX_SignExtendedIn <= SignEx_Out;
-
---end ID stage----------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------
-
---EX stage----------------------------------------------------------------------------------------------------------------
 -- Input for ALU
-ALU_InA <= IDEX_ReadData2Out when (IDEX_ALUOpOut = "010" and 
-											  IDEX_SignExtendedOut(5 downto 3) = "000") else	-- IDEX_SignExtendedOut(5 downto 3) is Instr(5 downto 3)
-			  IDEX_ReadData1Out;
-			  
-ALU_InB <= (x"000000" & "000" & IDEX_SignExtendedOut(10 downto 6)) when (IDEX_ALUOpOut = "010" and 
-																								 IDEX_SignExtendedOut(5 downto 2) = "0000") else
-				x"00000000" when IDEX_ALUOpOut = "101" and IDEX_BranchOut = '1' else  -- BGEZ
-				IDEX_ReadData1Out when (IDEX_ALUOpOut = "010" and 
-												IDEX_SignExtendedOut(5 downto 2) = "0001") else
-				IDEX_ReadData2Out when IDEX_ALUSrcOut = '0' else
-				IDEX_SignExtendedOut when IDEX_SignExtendOut = '1' else
-			  (x"0000" & IDEX_SignExtendedOut(15 downto 0));  -- for ADDIU, ORI (non sign extend imm)
+ALU_InA <= ReadData2_Reg when (ALUOp = "010" and Instr(5 downto 3) = "000") else
+				ReadData1_Reg;
+ALU_InB <= (x"000000" & "000" & Instr(10 downto 6)) when (ALUOp = "010" and Instr(5 downto 2) = "0000") else
+				x"00000000" when ALUOp = "101" and Branch = '1' else  -- BGEZ
+				ReadData1_Reg when (ALUOp = "010" and Instr(5 downto 2) = "0001") else
+				ReadData2_Reg when ALUSrc = '0' else
+				SignEx_Out when SignExtend = '1' else
+			  (x"0000" & Instr(15 downto 0));  -- for ADDIU, ORI (non sign extend imm)
 
-ALU_Func <= "00110" when IDEX_ALUOpOut = "001" else									-- add when branch
-				"00010" when IDEX_ALUOpOut = "000" else									-- add when lw, sw, addiu, addi
-				"00001" when IDEX_ALUOpOut = "111" else 									-- or when ori
-				"00111" when IDEX_ALUOpOut = "101" else									-- slt when bgez, slti
-				"00000" when IDEX_SignExtendedOut(5 downto 0) = "100100" else		-- and
-				"00001" when IDEX_SignExtendedOut(5 downto 0) = "100101" else		-- or
-				"01100" when IDEX_SignExtendedOut(5 downto 0) = "100111" else		-- nor
-				"00100" when IDEX_SignExtendedOut(5 downto 0) = "100110" else		-- xor
-				"00010" when IDEX_SignExtendedOut(5 downto 0) = "100000" else		-- add
-				"00110" when IDEX_SignExtendedOut(5 downto 0) = "100010" else		-- sub
-				"00111" when IDEX_SignExtendedOut(5 downto 0) = "101010" else		-- slti, bgez, slt
-				"01110" when IDEX_SignExtendedOut(5 downto 0) = "101011"else		-- sltu
-				"00101" when (IDEX_SignExtendedOut(5 downto 0) = "000000" or 
-								  IDEX_SignExtendedOut(5 downto 0) = "000100") else	-- sll, sllv
-				"01101" when (IDEX_SignExtendedOut(5 downto 0) = "000010" or 
-								  IDEX_SignExtendedOut(5 downto 0) = "000110") else	-- srl, srlv
-				"01001" when (IDEX_SignExtendedOut(5 downto 0) = "000011" or 
-								  IDEX_SignExtendedOut(5 downto 0) = "000111") else	-- sra, srav
-				"10000" when IDEX_SignExtendedOut(5 downto 0) = "011000" else		-- mult
-				"10001" when IDEX_SignExtendedOut(5 downto 0) = "011001" else		-- multu
-				"10010" when IDEX_SignExtendedOut(5 downto 0) = "011010" else		-- div
-				"10011" when IDEX_SignExtendedOut(5 downto 0) = "011011" else		-- divu
+ALU_Func <= "00110" when ALUOp = "001" else						-- add when branch
+				"00010" when ALUOp = "000" else						-- add when lw, sw, addiu, addi
+				"00001" when ALUOp = "011"	else 						-- or when ori
+				"00111" when ALUOp = "101" else						-- slt when bgez, slti
+				"00000" when Instr(5 downto 0) = "100100" else	-- and
+				"00001" when Instr(5 downto 0) = "100101" else	-- or
+				"01100" when Instr(5 downto 0) = "100111" else	-- nor
+				"00100" when Instr(5 downto 0) = "100110" else	-- xor
+				"00010" when Instr(5 downto 0) = "100000" else	-- add
+				"00110" when Instr(5 downto 0) = "100010" else	-- sub
+				"00111" when Instr(5 downto 0) = "101010" else 	-- slt
+				"01110" when Instr(5 downto 0) = "101011"else	-- sltu
+				"00101" when (Instr(5 downto 0) = "000000" or 
+								  Instr(5 downto 0) = "000100") else	-- sll, sllv
+				"01101" when (Instr(5 downto 0) = "000010" or 
+								  Instr(5 downto 0) = "000110") else	-- srl, srlv
+				"01001" when (Instr(5 downto 0) = "000011" or 
+								  Instr(5 downto 0) = "000111") else	-- sra, srav
+				"10000" when Instr(5 downto 0) = "011000" else	-- mult
+				"10001" when Instr(5 downto 0) = "011001" else	-- multu
+				"10010" when Instr(5 downto 0) = "011010" else	-- div
+				"10011" when Instr(5 downto 0) = "011011" else	-- divu
 				"XXXXX";														-- unknown operation
-				
 ALU_Control <= RESET & ALU_Func;	
 
+-- Input for ControlUnit
+opcode <= Instr(31 downto 26);
+
+
+-- Input for RegFile
+ReadAddr1_Reg <= Instr(25 downto 21);
+ReadAddr2_Reg <= Instr(20 downto 16);
+WriteAddr_Reg <= "11111" when PCtoReg = '1' or 
+										(ALUOp = "010" and Instr(5 downto 0) = "001001") else
+						Instr(20 downto 16) when RegDst = '0' else
+					  Instr(15 downto 11);
+WriteData_Reg <= PC_in + 4 when PCtoReg = '1' or 
+										  (ALUOp = "010" and Instr(5 downto 0) = "001001") else
+						Data_in when MemtoReg = '1' else
+					  (Instr(15 downto 0) & x"0000") when InstrtoReg = '1' else
+					  ReadData_HiLo(63 downto 32) when (ALUOp = "010" and Instr(5 downto 0) = "010000") else
+					  ReadData_HiLo(31 downto 0) when (ALUOp = "010" and Instr(5 downto 0) = "010010") else
+					  ALU_Result1;
+					  
 -- Input for RegHiLo
-RegWrite_HiLo <= '1' when (IDEX_ALUOpOut = "010" and IDEX_SignExtendedOut(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
+RegWrite_HiLo <= '1' when (ALUOp = "010" and Instr(5 downto 3) = "011") else -- write HiLO when DIV/U and MULT/U
 					  '0';
 WriteData_HiLo <= ALU_Result2 & ALU_Result1;
 
--- Input to EX/MEM
-EXMEM_BranchIn <= IDEX_BranchOut;
-EXMEM_BranchTargetIn <= IDEX_PCPlus4Out + (IDEX_SignExtendedOut(29 downto 0) & "00");
-EXMEM_MemreadIn <= IDEX_MemreadOut;
-EXMEM_MemtoRegIn <= IDEX_MemtoRegOut;
-EXMEM_MemwriteIn <= IDEX_MemwriteOut;
-EXMEM_ALUZeroIn <= ALU_Status(0);
-EXMEM_ALUResult1In <= ALU_Result1;
-EXMEM_ALUResult2In <= ALU_Result2;
-EXMEM_WriteDataMemIn <= IDEX_ReadData2Out;	-- Need to modify for MEM forwarding
-EXMEM_WriteAddrRegIn <= "11111" when IDEX_PCtoRegOut = '1' or
-												 (IDEX_ALUOpOut = "010" and IDEX_SignExtendedOut(5 downto 0) = "001001") else	-- jalr
-								IDEX_RegRtOut when IDEX_RegDstOut = '0' else
-								IDEX_RegRdOut;
-
----end EX stage---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------
-
----MEM stage------------------------------------------------------------------------------------------------------------------
-
--- Output to TOP
-Addr_Data <= EXMEM_ALUResult1Out;
-Data_Out <=	EXMEM_WriteDataMemOut;
-Memread <= EXMEM_MemreadOut;
-Memwrite <= EXMEM_MemwriteOut;
-
--- Input to MEM/WB
-MEMWB_MemtoRegIn <= EXMEM_MemtoRegOut;
-MEMWB_MemReadDataIn <= Data_In;
-MEMWB_ALUResult1In <= EXMEM_ALUResult1Out;
-MEMWB_ALUResult2In <= EXMEM_ALUResult2Out;
-MEMWB_WriteAddrRegIn <= EXMEM_WriteAddrRegOut;
-
----end MEM stage---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------
-
----WB stage-------------------------------------------------------------------------------------------------------------------
-WriteAddr_Reg <= MEMWB_WriteAddrRegOut;
-WriteData_Reg <= PC_in + 4 when ((Instr(31 downto 26) = "000001" and 
-						(Instr(20 downto 16) = "10001" or Instr(20 downto 16) = "10000")) or 
-						Instr(31 downto 26) = "000011" or (ALUOp = "010" and Instr(5 downto 0) = "001001")) else	--bgezal or bltzal or jal or jalr
-						Data_in when MemtoReg = '1' else
-					  (Instr(15 downto 0) & x"0000") when InstrtoReg = '1' else
-					  ReadData_HiLo(63 downto 32) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010000") else
-					  ReadData_HiLo(31 downto 0) when (Instr(31 downto 26) = "000000" and Instr(5 downto 0) = "010010") else
---					  CoProcessorOut when (Instr(31 downto 26) = "010000" and Instr(23) = '0') else -- MFC0
-					  MEMWB_ALUResult1Out;
-
----end WB stage---------------------------------------------------------------------------------------------------------------
-------------------------------------------------------------------------------------------------------------------------------
-
--- Input for CoProcessor0
---CoProAddr_Read <= Instr(15 downto 11);
---CoProAddr_Write <= Instr(15 downto 11);
---CoProcessorIn <= ReadData2_Reg;
---CoProcessorWrite <= '1' when (Instr(31 downto 26) = "010000" and Instr(23) = '1') else -- MTC0
---						  '0';
+-- Input for SignExtender
+SignEx_In <= Instr(15 downto 0);
 
 end arch_MIPS;
 
