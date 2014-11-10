@@ -31,10 +31,10 @@ use IEEE.STD_LOGIC_unsigned.ALL;
 --use UNISIM.VComponents.all;
 
 entity CoProcessor is
-	 Port ( CoProAddr_Read   : in  STD_LOGIC_VECTOR(4 downto 0);
-			  CoProcessorIn    : in  STD_LOGIC_VECTOR(31 downto 0);
-			  CoProAddr_Write  : in  STD_LOGIC_VECTOR(4 downto 0);
-           CoProcessorOut   : out STD_LOGIC_VECTOR(31 downto 0);
+	 Port ( EPCin   			 : in  STD_LOGIC_VECTOR(31 downto 0);
+			  CauseIn    		 : in  STD_LOGIC_VECTOR(31 downto 0);
+			  CoProcessorRead	 : in  STD_LOGIC; -- 1 read EPC, 0 read cause
+			  CoProcessorOut	 : out STD_LOGIC_VECTOR(31 downto 0);
 			  CoProcessorWrite : in  STD_LOGIC;
            CLK              : in  STD_LOGIC
 			 );
@@ -42,26 +42,26 @@ end CoProcessor;
 
 architecture arch_CoProcessor of CoProcessor is
 
-type reg_type is array (0 to 31) of std_logic_vector(31 downto 0);
-signal REG: reg_type := (others => x"00000000");
-
--- EPC: register 4
--- Count: register 9
--- Compare Register: register 11
+signal EPC 	 : STD_LOGIC_VECTOR(31 downto 0);
+signal Cause :	STD_LOGIC_VECTOR(31 downto 0);
+-- EPC: register 14
 -- Status Register: register 12
 -- Cause Register: register 13
+-- interupt handler MEM(28)
 
 begin
 
 -- Read data from REG
-CoProcessorOut <= REG(conv_integer(CoProAddr_Read));
+CoProcessorOut <= EPC when CoProcessorRead = '1' else
+						Cause;
 
 -- Write data to REG
 process (CLK)
 begin
 	if rising_edge(CLK) then
 		if CoProcessorWrite = '1' then
-			REG(conv_integer(CoProAddr_Write)) <= CoProcessorIn;
+			EPC   <= EPCIn;
+			Cause <= CauseIn;
 		end if;
 	end if;
 end process;
