@@ -75,7 +75,7 @@ component ControlUnit is
 			MemRead 		: out  STD_LOGIC;	
 			MemtoReg 	: out  STD_LOGIC;	
 			InstrtoReg	: out  STD_LOGIC; -- true for LUI. When true, Instr(15 downto 0)&x"0000" is written to rt
-			PCtoReg		: out	 STD_LOGIC;
+			PCtoReg		: out  STD_LOGIC;
 			MemWrite		: out  STD_LOGIC;	
 			ALUSrc 		: out  STD_LOGIC;	
 			SignExtend 	: out  STD_LOGIC; -- false for ORI 
@@ -285,7 +285,7 @@ end component;
 	signal	WriteData_Reg 	:  STD_LOGIC_VECTOR (31 downto 0);
 	
 ----------------------------------------------------------------
--- Hi/Lo Register Signals
+-- Hi/Lo Register signals
 ----------------------------------------------------------------								
    signal  WriteData_HiLo : STD_LOGIC_VECTOR (63 downto 0);
    signal  ReadData_HiLo  : STD_LOGIC_VECTOR (63 downto 0);
@@ -629,7 +629,6 @@ MEM_WB1	:MEM_WB port map
 ----------------------------------------------------------------
 --<Rest of the logic goes here>
 
-
 --IF stage----------------------------------------------------------------------------------------------------------------
 PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
 			  PC_out;
@@ -787,7 +786,6 @@ WriteData_Reg <= PC_in + 4 when ((Instr(31 downto 26) = "000001" and
 --CoProcessorIn <= ReadData2_Reg;
 --CoProcessorWrite <= '1' when (Instr(31 downto 26) = "010000" and Instr(23) = '1') else -- MTC0
 --						  '0';
-						  
 
 end arch_MIPS;
 

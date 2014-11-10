@@ -14,8 +14,11 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 99b53c03b4f6926392c8704076208c9b506671e3
 # =========================
 # Operating System Files
 # =========================
@@ -88,8 +91,11 @@ Temporary Items
 *.bgn
 *.bit
 *.drc
+<<<<<<< HEAD
 *.exe
 *.wdb
+=======
+>>>>>>> 99b53c03b4f6926392c8704076208c9b506671e3
 _ngo/
 xlnx_auto_0_xdb
 *.pcf
