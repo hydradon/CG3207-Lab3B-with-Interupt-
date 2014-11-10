@@ -110,6 +110,19 @@ component RegHiLo is
 end component;
 
 ----------------------------------------------------------------
+-- CoProcessor
+----------------------------------------------------------------
+component CoProcessor is
+    Port ( EPCin   			 : in  STD_LOGIC_VECTOR(31 downto 0);
+			  CauseIn    		 : in  STD_LOGIC_VECTOR(31 downto 0);
+			  CoProcessorRead	 : in  STD_LOGIC; -- 1 read EPC, 0 read cause
+			  CoProcessorOut	 : out STD_LOGIC_VECTOR(31 downto 0);
+			  CoProcessorWrite : in  STD_LOGIC;
+           CLK              : in  STD_LOGIC
+			 );
+end component;
+
+----------------------------------------------------------------
 -- SignExtender
 ----------------------------------------------------------------
 component SignExtender is
@@ -164,6 +177,15 @@ end component;
    signal  WriteData_HiLo : STD_LOGIC_VECTOR (63 downto 0);
    signal  ReadData_HiLo  : STD_LOGIC_VECTOR (63 downto 0);
 	signal  RegWrite_HiLo  : STD_LOGIC;
+	
+----------------------------------------------------------------
+-- CoProcessor Signals
+----------------------------------------------------------------								
+   signal  EPCin   			 : STD_LOGIC_VECTOR(31 downto 0);
+	signal  CauseIn    		 : STD_LOGIC_VECTOR(31 downto 0);
+	signal  CoProcessorRead	 : STD_LOGIC; -- 1 read EPC, 0 read cause
+   signal  CoProcessorOut	 : STD_LOGIC_VECTOR(31 downto 0);
+	signal  CoProcessorWrite : STD_LOGIC;
 	
 ----------------------------------------------------------------
 -- SignExtend Signals
@@ -250,13 +272,26 @@ RegFile1			: RegFile port map
 ----------------------------------------------------------------
 -- HiLo register port map
 ----------------------------------------------------------------
-RegHiLo1		:   RegHiLo port map
+RegHiLo1			 :RegHiLo port map
 					 (
 					 ReadData_HiLo  => ReadData_HiLo,
 					 WriteData_HiLo => WriteData_HiLo,
 					 RegWrite_HiLo  => RegWrite_HiLo,
 					 CLK            => CLK
 					 );
+
+----------------------------------------------------------------
+-- CoProcessor port map
+----------------------------------------------------------------
+CoProcessor1		:CoProcessor port map
+						(
+						EPCin   			  => EPCin,
+						CauseIn    		  => CauseIn,
+						CoProcessorRead  => CoProcessorRead, -- 1 read EPC, 0 read cause
+						CoProcessorOut	  => CoProcessorOut,
+						CoProcessorWrite => CoProcessorWrite,
+						CLK              => CLK
+						);
 					 
 ----------------------------------------------------------------
 -- SignExtender port map
@@ -279,9 +314,11 @@ Data_Out <=	ReadData2_Reg;
 -- Input for PC
 PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
 			  PC_out;
-PC_In <= Readdata1_Reg when ALUOp = "010" and Instr(5 downto 1) = "00100" else -- JR, JALR
+PC_In <= x"0000001c" when ALU_Status(1) = '1' else -- generate Interupt
+			Readdata1_Reg when ALUOp = "010" and Instr(5 downto 1) = "00100" else -- JR, JALR
 			(PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' else
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else	-- beq, bgez
+			CoProcessorOut when (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000") else -- eret
 			PCPlus4;
 
 -- Input for ALU
@@ -336,6 +373,7 @@ WriteData_Reg <= PC_in + 4 when PCtoReg = '1' or
 					  (Instr(15 downto 0) & x"0000") when InstrtoReg = '1' else
 					  ReadData_HiLo(63 downto 32) when (ALUOp = "010" and Instr(5 downto 0) = "010000") else
 					  ReadData_HiLo(31 downto 0) when (ALUOp = "010" and Instr(5 downto 0) = "010010") else
+					  CoProcessorOut when (Instr(31 downto 26) = "010000" and Instr(23) = '0') else -- MFC0
 					  ALU_Result1;
 					  
 -- Input for RegHiLo
@@ -345,6 +383,16 @@ WriteData_HiLo <= ALU_Result2 & ALU_Result1;
 
 -- Input for SignExtender
 SignEx_In <= Instr(15 downto 0);
+
+-- Input for CoProcessor0
+EPCIn   <= PC_out;
+CauseIn <=	x"00000002" when ALU_Status(1) = '1' else
+				x"00000000";
+CoProcessorRead <= '1' when (Instr(31 downto 26) = "010000" and Instr(20 downto 16) = "01110") or   -- address of EPC #14
+									 (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000")  else -- ERET
+						 '0';														                                     -- address of Cause #assuming 13
+CoProcessorWrite <= '1' when ALU_Status(1) = '1' or (Instr(31 downto 26) = "010000" and Instr(23) = '1') else -- MTC0
+							'0';
 
 end arch_MIPS;
 

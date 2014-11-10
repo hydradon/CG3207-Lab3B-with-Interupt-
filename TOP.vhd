@@ -132,6 +132,12 @@ constant INSTR_MEM : MEM_256x32 := (
 			x"ad0cffff", -- 			sw  $t4, 0xffffffff($t0)	# LED address 0x10020000 = 0x10020001 + 0xffffffff.
 			x"01806027", --			nor $t4, $t4, $zero
 			x"08100007", -- 			j loop # infinite loop; n*3 (delay instructions) + 5 (non-delay instructions).
+			
+			-- interupt handler
+			x"35ad00aa", --			ori $t5, 170   #10101010
+			x"3c011002", --			sw $t5, 0x10020000
+			x"ac2d0000", --
+			x"42000018", --			eret
 			others=> x"00000000");
 
 -- The Blinky program reads the DIP switches in the beginning. Let the value read be VAL
