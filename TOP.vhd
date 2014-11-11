@@ -103,41 +103,29 @@ type MEM_256x32 is array (0 to 255) of std_logic_vector (31 downto 0); -- 256 wo
 -- Instruction Memory
 ----------------------------------------------------------------
 constant INSTR_MEM : MEM_256x32 := (
-			x"3c090000", -- start : lui $t1, 0x0000
-			x"35290001", -- 			ori $t1, 0x0001 # constant 1
-			x"3c081002", -- 			lui $t0, 0x1002 # DIP address before offset
-			x"35088001", --			ori $t0, 0x8001
-			x"8d0c7fff", --			lw  $t4, 0x7fff($t0) # DIP address 0x10030000 = 0x10028001 + 0x7fff
-			x"3c081002", --			lui $t0, 0x1002 # LED address before offset
-			x"35080001", --			ori $t0, 0x0001
-			x"3c0b0004", -- loop: 	lui $t3, 0x0004
-			x"000b5180", -- 			sll $t2, $t3, 0x0006
-			x"000a5282", -- 			srl $t2, $t2, 0x000a
-			x"000a5303", -- 			sra $t2, $t2, 0x000c
-			x"01495022", -- delay1: sub $t2, $t2, $t1 
-			x"0149582a", -- 			slt $t3, $t2, $t1
-			x"1160fffd", -- 			beq $t3, $zero, delay
-			
-			x"3c0bffff", -- 			lui $t3, 0xffff
-			x"012b5807", -- 			srav $t3, $t3, $t1
-			x"3c0affff", -- 			lui $t2, 0xffff
-			x"014b5026", -- 			xor $t2, $t2, $t3
-			x"012a5004", -- 			sllv $t2, $t2, $t1
-			x"012a5006", -- 			srlv $t2, $t2, $t1
-			x"000a53c2", -- 			srl $t2, $t2, 0x000f
-			x"214a0003", -- 			addi $t2, $t2, 0x0003
-			x"01495022", -- delay2: sub $t2, $t2, $t1
-			x"012a5822", --			sub $t3, $t1, $t2
-			x"0541fffd", --			bgez $t3, delay2
-			x"ad0cffff", -- 			sw  $t4, 0xffffffff($t0)	# LED address 0x10020000 = 0x10020001 + 0xffffffff.
-			x"01806027", --			nor $t4, $t4, $zero
-			x"08100007", -- 			j loop # infinite loop; n*3 (delay instructions) + 5 (non-delay instructions).
-			
-			-- interupt handler
-			x"35ad00aa", --			ori $t5, 170   #10101010
-			x"3c011002", --			sw $t5, 0x10020000
-			x"ac2d0000", --
-			x"42000018", --			eret
+			x"35290001",	-- start:	ori $t1, 0x0001 # constant 1
+			x"3c10ffff", 	--				lui $s0, 0xffff
+			x"3610ff5d",	--				ori $s0, 0xff5d # $t0 is 0xffffff5d
+			x"3c11ffff", 	--				lui $s1, 0xffff
+			x"3631ff00",	--				ori $s1, 0xff00 # $s1 is 0xffffff00
+			x"3c011003",	--	loop:		lw $t4, 0x10030000	#DIP address 0x10030000
+			x"8c2c0000",
+			x"01916025",	--				or $t4, $t4, $s1
+			x"354a0004",	--				ori $t2, 0x0004	#delay counter (n) if using slow clock
+			x"01495022",	--	delay:	sub $t2, $t2, $t1
+			x"0149582a",	--				slt $t3, $t2, $t1
+			x"1160fffd",	--				beq $t3, $zero, delay
+			x"01919020",	--				add $s2, $t4, $s1
+			x"3c011002",	--				sw $s2, 0x10020000 # display lowest byte in $s2
+			x"ac320000",
+			x"08100005",	--				j loop
+			x"400e6800",	--	handler:	mfc0, $t6, $13
+			x"3c011002",	--				sw $t6, 0x10020000 # display Cause register (expect 0x02 - Ovf code)
+			x"ac2e0000",
+			x"35ad00aa",	--				ori $t5, 170
+			x"3c011002",	--				sw $t5, 0x10020000
+			x"ac2d0000",	
+			x"42000018",	--				eret
 			others=> x"00000000");
 
 -- The Blinky program reads the DIP switches in the beginning. Let the value read be VAL
