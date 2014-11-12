@@ -203,7 +203,7 @@ begin
 			RegDst <= 'X';
 		
 		when "010000" => -- MFC0 & MTC0 & ERET
-			ALUOp <= "XXX";
+			ALUOp <= "110";
 			Branch <= '0';
 			Jump <= '0';
 			MemRead <= '0';
@@ -213,7 +213,7 @@ begin
 			MemWrite <= '0';
 			ALUSrc <= 'X';
 			SignExtend <= '0';
-			RegWrite <= '0';
+			RegWrite <= '1';
 			RegDst <= '0';
 			
 		when others =>

@@ -113,10 +113,10 @@ end component;
 -- CoProcessor
 ----------------------------------------------------------------
 component CoProcessor is
-    Port ( EPCin   			 : in  STD_LOGIC_VECTOR(31 downto 0);
+   Port (  EPCin   			 : in  STD_LOGIC_VECTOR(31 downto 0);
 			  CauseIn    		 : in  STD_LOGIC_VECTOR(31 downto 0);
-			  CoProcessorRead	 : in  STD_LOGIC; -- 1 read EPC, 0 read cause
-			  CoProcessorOut	 : out STD_LOGIC_VECTOR(31 downto 0);
+			  EPCout				 : out STD_LOGIC_VECTOR(31 downto 0);
+			  CauseOut			 :	out STD_LOGIC_VECTOR(31 downto 0);
 			  CoProcessorWrite : in  STD_LOGIC;
            CLK              : in  STD_LOGIC
 			 );
@@ -183,8 +183,8 @@ end component;
 ----------------------------------------------------------------								
    signal  EPCin   			 : STD_LOGIC_VECTOR(31 downto 0);
 	signal  CauseIn    		 : STD_LOGIC_VECTOR(31 downto 0);
-	signal  CoProcessorRead	 : STD_LOGIC; -- 1 read EPC, 0 read cause
-   signal  CoProcessorOut	 : STD_LOGIC_VECTOR(31 downto 0);
+	signal  EPCout				 : STD_LOGIC_VECTOR(31 downto 0);
+	signal  CauseOut			 :	STD_LOGIC_VECTOR(31 downto 0);
 	signal  CoProcessorWrite : STD_LOGIC;
 	
 ----------------------------------------------------------------
@@ -287,8 +287,8 @@ CoProcessor1		:CoProcessor port map
 						(
 						EPCin   			  => EPCin,
 						CauseIn    		  => CauseIn,
-						CoProcessorRead  => CoProcessorRead, -- 1 read EPC, 0 read cause
-						CoProcessorOut	  => CoProcessorOut,
+						EPCout			  => EPCout, -- 1 read EPC, 0 read cause
+						CauseOut			  => CauseOut,
 						CoProcessorWrite => CoProcessorWrite,
 						CLK              => CLK
 						);
@@ -314,11 +314,11 @@ Data_Out <=	ReadData2_Reg;
 -- Input for PC
 PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
 			  PC_out;
-PC_In <= x"00400040" when ALU_Status(1) = '1' else -- generate Interupt
+PC_In <= x"0040001c" when ALU_Status(1) = '1' else -- generate Interupt
 			Readdata1_Reg when ALUOp = "010" and Instr(5 downto 1) = "00100" else -- JR, JALR
 			(PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' else
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else	-- beq, bgez
-			CoProcessorOut when (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000") else -- eret
+			EPCout + 4 when (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000") else -- eret
 			PCPlus4;
 
 -- Input for ALU
@@ -335,6 +335,7 @@ ALU_Func <= "00110" when ALUOp = "001" else						-- add when branch
 				"00010" when ALUOp = "000" else						-- add when lw, sw, addiu, addi
 				"00001" when ALUOp = "011"	else 						-- or when ori
 				"00111" when ALUOp = "101" else						-- slt when bgez, slti
+				"XXXXX" when ALUOp = "110" else						-- MFC0, MTC0, ERET
 				"00000" when Instr(5 downto 0) = "100100" else	-- and
 				"00001" when Instr(5 downto 0) = "100101" else	-- or
 				"01100" when Instr(5 downto 0) = "100111" else	-- nor
@@ -373,7 +374,7 @@ WriteData_Reg <= PC_in + 4 when PCtoReg = '1' or
 					  (Instr(15 downto 0) & x"0000") when InstrtoReg = '1' else
 					  ReadData_HiLo(63 downto 32) when (ALUOp = "010" and Instr(5 downto 0) = "010000") else
 					  ReadData_HiLo(31 downto 0) when (ALUOp = "010" and Instr(5 downto 0) = "010010") else
-					  CoProcessorOut when (Instr(31 downto 26) = "010000" and Instr(23) = '0') else -- MFC0
+					  CauseOut when (Instr(31 downto 26) = "010000" and Instr(23) = '0' and Instr(5 downto 0) = "000000") else -- MFC0
 					  ALU_Result1;
 					  
 -- Input for RegHiLo
@@ -388,9 +389,6 @@ SignEx_In <= Instr(15 downto 0);
 EPCIn   <= PC_out;
 CauseIn <=	x"00000002" when ALU_Status(1) = '1' else
 				x"00000000";
-CoProcessorRead <= '1' when (Instr(31 downto 26) = "010000" and Instr(20 downto 16) = "01110") or   -- address of EPC #14
-									 (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000")  else -- ERET
-						 '0';														                                     -- address of Cause #assuming 13
 CoProcessorWrite <= '1' when ALU_Status(1) = '1' or (Instr(31 downto 26) = "010000" and Instr(23) = '1') else -- MTC0
 							'0';
 

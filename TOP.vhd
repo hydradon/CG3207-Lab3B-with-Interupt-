@@ -103,29 +103,54 @@ type MEM_256x32 is array (0 to 255) of std_logic_vector (31 downto 0); -- 256 wo
 -- Instruction Memory
 ----------------------------------------------------------------
 constant INSTR_MEM : MEM_256x32 := (
+--			x"35290001",	-- start:	ori $t1, 0x0001 # constant 1
+--			x"3c107fff", 	--				lui $s0, 0x7fff
+--			x"3610ff5d",	--				ori $s0, 0xff5d # $s0 is 0x7fffff5d
+--			x"3c011003",	--	loop:		lw $t4, 0x10030000	#DIP address 0x10030000
+--			x"8c2c0000",
+--			x"01909020",	--				add $s2, $t4, $s0
+--			x"3c011002",	--				sw $s2, 0x10020000 # display lowest byte in $s2
+--			x"ac320000",
+--			x"08100003",	--				j loop
+--			x"400e6800",	--	handler:	mfc0, $t6, $13
+--			x"3c011002",	--				sw $t6, 0x10020000 # display Cause register (expect 0x02 - Ovf code)
+--			x"ac2e0000",
+--			x"354a0003",	--				ori $t2, 0x0003 # delay counter (n)
+--			x"01495022",	--	delay2:	sub $t2, $t2, $t1
+--			x"0149582a",	--				slt $t3, $t2, $t1
+--			x"1160fffd",	--				beq $t3, $zero, delay2
+--			x"35ad00aa",	--				ori $t5, 170
+--			x"3c011002",	--				sw $t5, 0x10020000
+--			x"ac2d0000",
+--			x"354a0003",	--				ori $t2, 0x0003 delay counter (n)
+--			x"01495022",	--	delay3:	sub $t2, $t2, $t1
+--			x"0149582a",	--				slt $t3, $t2, $t1
+--			x"1160fffd",	--				beq $t3, $zero, delay3
+--			x"3c0e0000",	--				lui $t6, 0x0000
+--			x"3c0d0000",	--				lui $t5, 0x0000
+--			x"42000018",	--				eret
+
 			x"35290001",	-- start:	ori $t1, 0x0001 # constant 1
-			x"3c10ffff", 	--				lui $s0, 0xffff
-			x"3610ff5d",	--				ori $s0, 0xff5d # $t0 is 0xffffff5d
-			x"3c11ffff", 	--				lui $s1, 0xffff
-			x"3631ff00",	--				ori $s1, 0xff00 # $s1 is 0xffffff00
-			x"3c011003",	--	loop:		lw $t4, 0x10030000	#DIP address 0x10030000
-			x"8c2c0000",
-			x"01916025",	--				or $t4, $t4, $s1
-			x"354a0004",	--				ori $t2, 0x0004	#delay counter (n) if using slow clock
-			x"01495022",	--	delay:	sub $t2, $t2, $t1
-			x"0149582a",	--				slt $t3, $t2, $t1
-			x"1160fffd",	--				beq $t3, $zero, delay
-			x"01919020",	--				add $s2, $t4, $s1
-			x"3c011002",	--				sw $s2, 0x10020000 # display lowest byte in $s2
-			x"ac320000",
-			x"08100005",	--				j loop
-			x"400e6800",	--	handler:	mfc0, $t6, $13
-			x"3c011002",	--				sw $t6, 0x10020000 # display Cause register (expect 0x02 - Ovf code)
-			x"ac2e0000",
+			x"3c107fff", 	--				lui $s0, 0xffff
+			x"3610ff5d",	--				ori $s0, 0xff5d # $s0 is 0xffffff5d
+			x"358c00a3",	--	loop:		ori $t4, 0x00a3	
+			x"01909020",	--				add $s2, $t4, $s0
+			x"356b1234",	--				ori $t3, 0x1234
+			x"08100003",	--				j loop
+			x"400e6800",	--	handler:	mfc0, $t6, $13		
 			x"35ad00aa",	--				ori $t5, 170
-			x"3c011002",	--				sw $t5, 0x10020000
-			x"ac2d0000",	
+			x"3c0e0000",	--				lui $t6, 0x0000
+			x"3c0d0000",	--				lui $t5, 0x0000
 			x"42000018",	--				eret
+			
+--			x"3c09bfff",
+--			x"3529bfff",
+--			x"01294820",
+--			x"354a1234",
+--			x"08100000",
+--			x"356b0064",
+--			x"42000018",
+	
 			others=> x"00000000");
 
 -- The Blinky program reads the DIP switches in the beginning. Let the value read be VAL
@@ -218,17 +243,17 @@ end process;
 ----------------------------------------------------------------
 -- Clock divider
 ----------------------------------------------------------------
--- CLK <= CLK_undiv;
+ CLK <= CLK_undiv;
 -- IMPORTANT : >>> uncomment the previous line and comment out the rest of the process
 --					>>> for SIMULATION or for obtaining a 100MHz clock frequency
-CLK_DIV_PROCESS : process(CLK_undiv)
-variable clk_counter : std_logic_vector(CLK_DIV_BITS-1 downto 0) := (others => '0');
-begin
-	if CLK_undiv'event and CLK_undiv = '1' then
-		clk_counter := clk_counter+1;
-		CLK <= clk_counter(CLK_DIV_BITS-1);
-	end if;
-end process;
+--CLK_DIV_PROCESS : process(CLK_undiv)
+--variable clk_counter : std_logic_vector(CLK_DIV_BITS-1 downto 0) := (others => '0');
+--begin
+--	if CLK_undiv'event and CLK_undiv = '1' then
+--		clk_counter := clk_counter+1;
+--		CLK <= clk_counter(CLK_DIV_BITS-1);
+--	end if;
+--end process;
 
 end arch_TOP;
 

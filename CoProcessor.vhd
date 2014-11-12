@@ -33,8 +33,8 @@ use IEEE.STD_LOGIC_unsigned.ALL;
 entity CoProcessor is
 	 Port ( EPCin   			 : in  STD_LOGIC_VECTOR(31 downto 0);
 			  CauseIn    		 : in  STD_LOGIC_VECTOR(31 downto 0);
-			  CoProcessorRead	 : in  STD_LOGIC; -- 1 read EPC, 0 read cause
-			  CoProcessorOut	 : out STD_LOGIC_VECTOR(31 downto 0);
+			  EPCout				 : out STD_LOGIC_VECTOR(31 downto 0);
+			  CauseOut			 :	out STD_LOGIC_VECTOR(31 downto 0);
 			  CoProcessorWrite : in  STD_LOGIC;
            CLK              : in  STD_LOGIC
 			 );
@@ -42,8 +42,8 @@ end CoProcessor;
 
 architecture arch_CoProcessor of CoProcessor is
 
-signal EPC 	 : STD_LOGIC_VECTOR(31 downto 0);
-signal Cause :	STD_LOGIC_VECTOR(31 downto 0);
+signal EPC 	 : STD_LOGIC_VECTOR(31 downto 0) := x"00000000";
+signal Cause :	STD_LOGIC_VECTOR(31 downto 0)	:= x"00000000";
 -- EPC: register 14
 -- Status Register: register 12
 -- Cause Register: register 13
@@ -52,8 +52,8 @@ signal Cause :	STD_LOGIC_VECTOR(31 downto 0);
 begin
 
 -- Read data from REG
-CoProcessorOut <= EPC when CoProcessorRead = '1' else
-						Cause;
+EPCOut <= EPC;
+CauseOut <= Cause;
 
 -- Write data to REG
 process (CLK)
