@@ -52,7 +52,7 @@ signal Cause :	STD_LOGIC_VECTOR(31 downto 0)	:= x"00000000";
 begin
 
 -- Read data from REG
-EPCOut <= EPC;
+EPCOut <= EPC + 4;
 CauseOut <= Cause;
 
 -- Write data to REG

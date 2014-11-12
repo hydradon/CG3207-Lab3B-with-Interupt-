@@ -313,12 +313,13 @@ Data_Out <=	ReadData2_Reg;
 
 -- Input for PC
 PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
+			  EPCout when (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000") else -- eret
 			  PC_out;
-PC_In <= x"0040001c" when ALU_Status(1) = '1' else -- generate Interupt
+PC_In <= x"00400028" when ALU_Status(1) = '1' else -- generate Interupt
 			Readdata1_Reg when ALUOp = "010" and Instr(5 downto 1) = "00100" else -- JR, JALR
 			(PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' else
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else	-- beq, bgez
-			EPCout + 4 when (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000") else -- eret
+			--EPCout when (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000") else -- eret
 			PCPlus4;
 
 -- Input for ALU
