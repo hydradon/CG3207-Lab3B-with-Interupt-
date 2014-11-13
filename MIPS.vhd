@@ -312,14 +312,14 @@ Addr_Data <= ALU_Result1;
 Data_Out <=	ReadData2_Reg;
 
 -- Input for PC
-PCPlus4 <= PC_out + 4 when ALU_Status(2) = '0' else
-			  EPCout when (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000") else -- eret
-			  PC_out;
+PCPlus4 <= --EPCout when (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000") else -- eret
+			  PC_out + 4;
 PC_In <= x"00400028" when ALU_Status(1) = '1' else -- generate Interupt
 			Readdata1_Reg when ALUOp = "010" and Instr(5 downto 1) = "00100" else -- JR, JALR
 			(PCPlus4(31 downto 28) & Instr(25 downto 0) & "00") when Jump = '1' else
 			PCPlus4 + (SignEx_out(29 downto 0) & "00") when Branch = '1' and ALU_Status(0) = '1' else	-- beq, bgez
-			--EPCout when (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000") else -- eret
+			EPCout when (Instr(31 downto 26) = "010000"	and Instr(5 downto 0) = "011000") else -- eret
+			PC_Out when ALU_Status(2) = '1' else
 			PCPlus4;
 
 -- Input for ALU
@@ -336,7 +336,8 @@ ALU_Func <= "00110" when ALUOp = "001" else						-- add when branch
 				"00010" when ALUOp = "000" else						-- add when lw, sw, addiu, addi
 				"00001" when ALUOp = "011"	else 						-- or when ori
 				"00111" when ALUOp = "101" else						-- slt when bgez, slti
-				"XXXXX" when ALUOp = "110" else						-- MFC0, MTC0, ERET
+				"11111" when ALUOp = "110" else						-- MFC0, MTC0, ERET
+				"11111" when ALUOp = "100" or ALUOp = "111" else	-- lui and unknown
 				"00000" when Instr(5 downto 0) = "100100" else	-- and
 				"00001" when Instr(5 downto 0) = "100101" else	-- or
 				"01100" when Instr(5 downto 0) = "100111" else	-- nor
@@ -355,7 +356,7 @@ ALU_Func <= "00110" when ALUOp = "001" else						-- add when branch
 				"10001" when Instr(5 downto 0) = "011001" else	-- multu
 				"10010" when Instr(5 downto 0) = "011010" else	-- div
 				"10011" when Instr(5 downto 0) = "011011" else	-- divu
-				"XXXXX";														-- unknown operation
+				"11111";														-- unknown operation
 ALU_Control <= RESET & ALU_Func;	
 
 -- Input for ControlUnit
@@ -366,11 +367,11 @@ opcode <= Instr(31 downto 26);
 ReadAddr1_Reg <= Instr(25 downto 21);
 ReadAddr2_Reg <= Instr(20 downto 16);
 WriteAddr_Reg <= "11111" when PCtoReg = '1' or 
-										(ALUOp = "010" and Instr(5 downto 0) = "001001") else
+										(ALUOp = "010" and Instr(5 downto 0) = "001001") else -- JALR
 						Instr(20 downto 16) when RegDst = '0' else
 					  Instr(15 downto 11);
 WriteData_Reg <= PC_in + 4 when PCtoReg = '1' or 
-										  (ALUOp = "010" and Instr(5 downto 0) = "001001") else
+										  (ALUOp = "010" and Instr(5 downto 0) = "001001") else -- JALR
 						Data_in when MemtoReg = '1' else
 					  (Instr(15 downto 0) & x"0000") when InstrtoReg = '1' else
 					  ReadData_HiLo(63 downto 32) when (ALUOp = "010" and Instr(5 downto 0) = "010000") else

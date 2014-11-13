@@ -144,15 +144,7 @@ constant INSTR_MEM : MEM_256x32 := (
 --			x"3c0e0000",	--				lui $t6, 0x0000
 --			x"3c0d0000",	--				lui $t5, 0x0000
 --			x"42000018",	--				eret
-			
---			x"3c09bfff",
---			x"3529bfff",
---			x"01294820",
---			x"354a1234",
---			x"08100000",
---			x"356b0064",
---			x"42000018",
-	
+		
 			others=> x"00000000");
 
 -- The Blinky program reads the DIP switches in the beginning. Let the value read be VAL
